@@ -1810,7 +1810,7 @@ export const opportunities: Opportunity[] = [
     id: '72',
     company: 'Alphabet / Intersect Power',
     project: 'Google Intersect Power Acquisition (Data Center Energy)',
-    sector: 'data-center',
+    sector: 'data-centers',
     investmentSize: 4750,
     jobs: 0,
     location: { state: 'US' },
