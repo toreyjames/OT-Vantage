@@ -37,31 +37,21 @@ const THE_HEART = {
       name: 'Cancer',
       stat: '10M deaths/year',
       aiPromise: 'AI detecting cancer years before symptoms. Pattern recognition across millions of cases.',
-      blocker: 'Needs: GPU compute, federated health data, clinical integration',
     },
     {
       name: 'Heart Disease',
       stat: '18M deaths/year',
       aiPromise: 'Real-time AI stroke/heart attack detection from scans. Minutes = brain cells saved.',
-      blocker: 'Needs: Hospital network integration, edge compute, 5G',
     },
     {
       name: 'Aging',
       stat: 'Universal',
       aiPromise: 'AI-driven cellular reprogramming. If it works, it changes everything.',
-      blocker: 'Needs: Massive GPU clusters, biological data platforms',
     },
     {
       name: 'Drug Discovery',
       stat: '$2.6B per drug',
       aiPromise: 'AI cutting drug development from 10 years to 2. AlphaFold already solved protein folding.',
-      blocker: 'Needs: Compute, protein databases, pharma partnerships',
-    },
-    {
-      name: 'Climate',
-      stat: '1.5°C threshold',
-      aiPromise: 'AI optimizing energy grids, predicting weather patterns, discovering new materials.',
-      blocker: 'Needs: Sensor networks, grid integration, massive compute',
     },
   ],
 }
@@ -115,31 +105,21 @@ const THE_FOUNDATION = {
       category: 'Rare Earths',
       problem: '90%+ refining capacity in China',
       consequence: 'No magnets → No EVs, wind turbines, or defense systems',
-      solution: 'Must automate to offset 5x labor cost disadvantage',
     },
     {
       category: 'Grid Infrastructure',
       problem: '10+ year permitting for transmission',
       consequence: 'Can\'t deliver power to new data centers',
-      solution: 'Need 47,000+ miles of new transmission by 2035',
     },
     {
       category: 'Nuclear Fuel (HALEU)',
       problem: 'Only Russia produces commercial HALEU',
       consequence: 'Advanced reactors can\'t operate',
-      solution: 'Centrus scale-up, DOE programs critical',
-    },
-    {
-      category: 'Water',
-      problem: 'Data centers need massive cooling',
-      consequence: 'Water-stressed regions can\'t host AI infrastructure',
-      solution: 'Alternative cooling tech, coastal siting',
     },
     {
       category: 'Skilled Labor',
       problem: 'China: 4.7M engineers/year. US: 200K/year',
-      consequence: 'Can\'t staff facilities at scale',
-      solution: 'AI/automation is the only path to competitiveness',
+      consequence: 'AI/automation is the only path to competitiveness',
     },
   ],
 }
@@ -155,62 +135,42 @@ const THE_URGENCY = {
       color: COLORS.danger,
     },
     {
-      stat: '3-5x',
-      label: 'US labor cost disadvantage ($30/hr vs $6/hr)',
-      color: COLORS.warning,
-    },
-    {
       stat: '90%',
       label: 'Advanced chips made in Taiwan (geopolitical risk)',
       color: COLORS.danger,
     },
     {
-      stat: '$500B+',
-      label: 'Already committed to Stargate alone',
+      stat: '$770B+',
+      label: 'Industrial pipeline we\'re tracking',
       color: COLORS.accent,
+    },
+    {
+      stat: '24/7',
+      label: 'Real-time policy & news monitoring',
+      color: COLORS.blue,
     },
   ],
 }
 
 // Calculate pipeline stats from real data
 const calculatePipelineStats = () => {
-  // Total tracked pipeline (all opportunities)
   const totalTracked = opportunities.reduce((sum, o) => sum + o.investmentSize, 0)
   const totalCount = opportunities.length
-  
-  // Policy-aligned pipeline (subset with policy tags)
   const policyAligned = opportunities.filter(o => o.trumpPolicyAlignment && o.trumpPolicyAlignment.length > 0)
   const policyPipeline = policyAligned.reduce((sum, o) => sum + o.investmentSize, 0)
-  
-  const byPolicy = {
-    stargate: opportunities.filter(o => o.trumpPolicyAlignment?.includes('stargate-initiative')),
-    chips: opportunities.filter(o => o.trumpPolicyAlignment?.includes('chips-sovereignty')),
-    nuclear: opportunities.filter(o => o.trumpPolicyAlignment?.includes('nuclear-restart')),
-    energy: opportunities.filter(o => o.trumpPolicyAlignment?.includes('energy-dominance')),
-    genesis: opportunities.filter(o => o.trumpPolicyAlignment?.includes('genesis-mission')),
-    aiLeadership: opportunities.filter(o => o.trumpPolicyAlignment?.includes('eo-14179-ai-leadership')),
-  }
   
   return {
     totalTracked,
     totalCount,
     policyPipeline,
     policyAlignedCount: policyAligned.length,
-    stargateValue: byPolicy.stargate.reduce((sum, o) => sum + o.investmentSize, 0),
-    stargateCount: byPolicy.stargate.length,
-    chipsValue: byPolicy.chips.reduce((sum, o) => sum + o.investmentSize, 0),
-    chipsCount: byPolicy.chips.length,
-    nuclearValue: byPolicy.nuclear.reduce((sum, o) => sum + o.investmentSize, 0),
-    nuclearCount: byPolicy.nuclear.length,
-    genesisValue: byPolicy.genesis.reduce((sum, o) => sum + o.investmentSize, 0),
-    genesisCount: byPolicy.genesis.length,
   }
 }
 
 // ============================================================================
 // MAIN COMPONENT
 // ============================================================================
-export default function ScoreboardPage() {
+export default function AboutPage() {
   const stats = calculatePipelineStats()
   
   const formatCurrency = (millions: number) => {
@@ -229,23 +189,22 @@ export default function ScoreboardPage() {
           <Link href="/radar" style={styles.navLink}>
             Radar
           </Link>
-          <Link href="/scoreboard" style={{ ...styles.navLink, ...styles.navLinkActive }}>
-            Scoreboard
-          </Link>
-          <Link href="/monitor" style={styles.navLink}>
-            Monitor
+          <Link href="/about" style={{ ...styles.navLink, ...styles.navLinkActive }}>
+            About
           </Link>
         </div>
       </nav>
 
       <div style={styles.container}>
+        {/* HERO SECTION */}
         <header style={styles.header}>
-          <div>
-            <h1 style={styles.title}>AI Manhattan Project</h1>
-            <p style={styles.subtitle}>
-              Why this matters • What's missing • Why now
-            </p>
-          </div>
+          <p style={styles.eyebrow}>WHAT THIS IS</p>
+          <h1 style={styles.title}>AI Manhattan Project</h1>
+          <p style={styles.heroSubhead}>Industrial rebuild pipeline tracking</p>
+          <p style={styles.subtitle}>
+            A real-time intelligence dashboard tracking the industrial infrastructure 
+            required for US AI leadership — and the policy initiatives driving it.
+          </p>
         </header>
 
         {/* THE CORE THESIS */}
@@ -258,93 +217,177 @@ export default function ScoreboardPage() {
           </div>
         </div>
 
+        {/* WHAT WE TRACK */}
+        <div style={styles.whatWeTrack}>
+          <h2 style={styles.sectionTitle}>What We Track</h2>
+          <div style={styles.trackingGrid}>
+            <div style={styles.trackingCard}>
+              <div style={styles.trackingIcon}>🏭</div>
+              <h3 style={styles.trackingTitle}>Industrial Projects</h3>
+              <p style={styles.trackingDesc}>
+                Semiconductor fabs, data centers, nuclear plants, battery factories, 
+                critical minerals, and grid infrastructure.
+              </p>
+              <div style={styles.trackingStat}>
+                <span style={styles.trackingNumber}>{stats.totalCount}</span>
+                <span style={styles.trackingLabel}>opportunities</span>
+              </div>
+            </div>
+            <div style={styles.trackingCard}>
+              <div style={styles.trackingIcon}>📜</div>
+              <h3 style={styles.trackingTitle}>Policy Alignment</h3>
+              <p style={styles.trackingDesc}>
+                EO 14179 (AI Leadership), CHIPS Act, Stargate, Genesis Mission, 
+                Nuclear Restart, Energy Dominance.
+              </p>
+              <div style={styles.trackingStat}>
+                <span style={styles.trackingNumber}>{stats.policyAlignedCount}</span>
+                <span style={styles.trackingLabel}>policy-aligned</span>
+              </div>
+            </div>
+            <div style={styles.trackingCard}>
+              <div style={styles.trackingIcon}>💰</div>
+              <h3 style={styles.trackingTitle}>Investment Pipeline</h3>
+              <p style={styles.trackingDesc}>
+                Real capital flowing into AI infrastructure — tracked by company, 
+                location, sector, and milestone.
+              </p>
+              <div style={styles.trackingStat}>
+                <span style={styles.trackingNumber}>{formatCurrency(stats.totalTracked)}</span>
+                <span style={styles.trackingLabel}>total pipeline</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* REAL-TIME INTELLIGENCE */}
+        <div style={styles.intelligenceSection}>
+          <h2 style={styles.sectionTitle}>📡 Always-On Intelligence</h2>
+          <p style={{textAlign: 'center', color: COLORS.textMuted, marginBottom: '1.5rem', maxWidth: '700px', marginLeft: 'auto', marginRight: 'auto'}}>
+            The Radar automatically discovers new opportunities as they're announced — 
+            no manual monitoring required.
+          </p>
+          <div style={styles.intelligenceGrid}>
+            <div style={styles.intelligenceCard}>
+              <div style={styles.intelligenceIcon}>🏛️</div>
+              <h4 style={styles.intelligenceTitle}>Federal Register</h4>
+              <p style={styles.intelligenceDesc}>
+                Executive orders, final rules, proposed regulations — real-time from federalregister.gov API
+              </p>
+            </div>
+            <div style={styles.intelligenceCard}>
+              <div style={styles.intelligenceIcon}>📰</div>
+              <h4 style={styles.intelligenceTitle}>News Feeds</h4>
+              <p style={styles.intelligenceDesc}>
+                Investment announcements scanned from major news sources via Google News RSS
+              </p>
+            </div>
+            <div style={styles.intelligenceCard}>
+              <div style={styles.intelligenceIcon}>🤖</div>
+              <h4 style={styles.intelligenceTitle}>Auto-Classification</h4>
+              <p style={styles.intelligenceDesc}>
+                Keyword extraction for sector, investment amount, location, and policy alignment
+              </p>
+            </div>
+            <div style={styles.intelligenceCard}>
+              <div style={styles.intelligenceIcon}>⚡</div>
+              <h4 style={styles.intelligenceTitle}>One-Click Promote</h4>
+              <p style={styles.intelligenceDesc}>
+                Discovered signals can be instantly added to the tracked pipeline
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* THREE PILLARS GRID */}
-        <div style={styles.pillarsGrid}>
-          
-          {/* THE HEART */}
-          <div style={{...styles.pillarCard, borderColor: THE_HEART.color + '44'}}>
-            <div style={styles.pillarHeader}>
-              <span style={{...styles.pillarIcon, backgroundColor: THE_HEART.color + '22', color: THE_HEART.color}}>
-                {THE_HEART.icon}
-              </span>
-              <div>
-                <h2 style={{...styles.pillarTitle, color: THE_HEART.color}}>{THE_HEART.title}</h2>
-                <p style={styles.pillarSubtitle}>{THE_HEART.subtitle}</p>
+        <div style={styles.pillarsSection}>
+          <h2 style={styles.sectionTitle}>Why This Matters</h2>
+          <div style={styles.pillarsGrid}>
+            
+            {/* THE HEART */}
+            <div style={{...styles.pillarCard, borderColor: THE_HEART.color + '44'}}>
+              <div style={styles.pillarHeader}>
+                <span style={{...styles.pillarIcon, backgroundColor: THE_HEART.color + '22', color: THE_HEART.color}}>
+                  {THE_HEART.icon}
+                </span>
+                <div>
+                  <h2 style={{...styles.pillarTitle, color: THE_HEART.color}}>{THE_HEART.title}</h2>
+                  <p style={styles.pillarSubtitle}>{THE_HEART.subtitle}</p>
+                </div>
+              </div>
+              <div style={styles.pillarContent}>
+                {THE_HEART.problems.map((problem, i) => (
+                  <div key={i} style={styles.problemItem}>
+                    <div style={styles.problemHeader}>
+                      <span style={styles.problemName}>{problem.name}</span>
+                      <span style={{...styles.problemStat, color: THE_HEART.color}}>{problem.stat}</span>
+                    </div>
+                    <p style={styles.problemPromise}>{problem.aiPromise}</p>
+                  </div>
+                ))}
               </div>
             </div>
-            <div style={styles.pillarContent}>
-              {THE_HEART.problems.slice(0, 4).map((problem, i) => (
-                <div key={i} style={styles.problemItem}>
-                  <div style={styles.problemHeader}>
-                    <span style={styles.problemName}>{problem.name}</span>
-                    <span style={{...styles.problemStat, color: THE_HEART.color}}>{problem.stat}</span>
-                  </div>
-                  <p style={styles.problemPromise}>{problem.aiPromise}</p>
-                  <p style={styles.problemBlocker}>⚠️ {problem.blocker}</p>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* THE BRAIN */}
-          <div style={{...styles.pillarCard, borderColor: THE_BRAIN.color + '44'}}>
-            <div style={styles.pillarHeader}>
-              <span style={{...styles.pillarIcon, backgroundColor: THE_BRAIN.color + '22', color: THE_BRAIN.color}}>
-                {THE_BRAIN.icon}
-              </span>
-              <div>
-                <h2 style={{...styles.pillarTitle, color: THE_BRAIN.color}}>{THE_BRAIN.title}</h2>
-                <p style={styles.pillarSubtitle}>{THE_BRAIN.subtitle}</p>
+            {/* THE BRAIN */}
+            <div style={{...styles.pillarCard, borderColor: THE_BRAIN.color + '44'}}>
+              <div style={styles.pillarHeader}>
+                <span style={{...styles.pillarIcon, backgroundColor: THE_BRAIN.color + '22', color: THE_BRAIN.color}}>
+                  {THE_BRAIN.icon}
+                </span>
+                <div>
+                  <h2 style={{...styles.pillarTitle, color: THE_BRAIN.color}}>{THE_BRAIN.title}</h2>
+                  <p style={styles.pillarSubtitle}>{THE_BRAIN.subtitle}</p>
+                </div>
+              </div>
+              <div style={styles.pillarContent}>
+                {THE_BRAIN.requirements.map((req, i) => (
+                  <div key={i} style={styles.requirementItem}>
+                    <div style={styles.requirementHeader}>
+                      <span style={styles.requirementName}>{req.name}</span>
+                      <span style={{
+                        ...styles.requirementGap,
+                        color: req.gap === 'Critical' || req.gap === '100%' ? COLORS.danger : COLORS.warning
+                      }}>
+                        Gap: {req.gap}
+                      </span>
+                    </div>
+                    <div style={styles.requirementStats}>
+                      <span>Need: {req.need}</span>
+                      <span>Have: {req.current}</span>
+                    </div>
+                    <p style={styles.requirementNote}>{req.note}</p>
+                  </div>
+                ))}
               </div>
             </div>
-            <div style={styles.pillarContent}>
-              {THE_BRAIN.requirements.map((req, i) => (
-                <div key={i} style={styles.requirementItem}>
-                  <div style={styles.requirementHeader}>
-                    <span style={styles.requirementName}>{req.name}</span>
-                    <span style={{
-                      ...styles.requirementGap,
-                      color: req.gap === 'Critical' || req.gap === '100%' ? COLORS.danger : COLORS.warning
-                    }}>
-                      Gap: {req.gap}
-                    </span>
-                  </div>
-                  <div style={styles.requirementStats}>
-                    <span>Need: {req.need}</span>
-                    <span>Have: {req.current}</span>
-                  </div>
-                  <p style={styles.requirementNote}>{req.note}</p>
-                </div>
-              ))}
-            </div>
-          </div>
 
-          {/* THE FOUNDATION */}
-          <div style={{...styles.pillarCard, borderColor: THE_FOUNDATION.color + '44'}}>
-            <div style={styles.pillarHeader}>
-              <span style={{...styles.pillarIcon, backgroundColor: THE_FOUNDATION.color + '22', color: THE_FOUNDATION.color}}>
-                {THE_FOUNDATION.icon}
-              </span>
-              <div>
-                <h2 style={{...styles.pillarTitle, color: THE_FOUNDATION.color}}>{THE_FOUNDATION.title}</h2>
-                <p style={styles.pillarSubtitle}>{THE_FOUNDATION.subtitle}</p>
-              </div>
-            </div>
-            <div style={styles.pillarContent}>
-              {THE_FOUNDATION.gaps.slice(0, 4).map((gap, i) => (
-                <div key={i} style={styles.gapItem}>
-                  <div style={styles.gapCategory}>{gap.category}</div>
-                  <div style={styles.gapProblem}>{gap.problem}</div>
-                  <div style={styles.gapConsequence}>→ {gap.consequence}</div>
+            {/* THE FOUNDATION */}
+            <div style={{...styles.pillarCard, borderColor: THE_FOUNDATION.color + '44'}}>
+              <div style={styles.pillarHeader}>
+                <span style={{...styles.pillarIcon, backgroundColor: THE_FOUNDATION.color + '22', color: THE_FOUNDATION.color}}>
+                  {THE_FOUNDATION.icon}
+                </span>
+                <div>
+                  <h2 style={{...styles.pillarTitle, color: THE_FOUNDATION.color}}>{THE_FOUNDATION.title}</h2>
+                  <p style={styles.pillarSubtitle}>{THE_FOUNDATION.subtitle}</p>
                 </div>
-              ))}
+              </div>
+              <div style={styles.pillarContent}>
+                {THE_FOUNDATION.gaps.map((gap, i) => (
+                  <div key={i} style={styles.gapItem}>
+                    <div style={styles.gapCategory}>{gap.category}</div>
+                    <div style={styles.gapProblem}>{gap.problem}</div>
+                    <div style={styles.gapConsequence}>→ {gap.consequence}</div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         {/* THE URGENCY */}
         <div style={styles.urgencySection}>
-          <h2 style={styles.urgencyTitle}>⏰ The Urgency: Why This Must Happen Now</h2>
+          <h2 style={styles.sectionTitle}>⏰ Why Now</h2>
           <div style={styles.urgencyGrid}>
             {THE_URGENCY.points.map((point, i) => (
               <div key={i} style={styles.urgencyCard}>
@@ -355,59 +398,15 @@ export default function ScoreboardPage() {
           </div>
         </div>
 
-        {/* PIPELINE TRACKING */}
-        <div style={styles.pipelineSection}>
-          <h2 style={styles.pipelineTitle}>📊 Pipeline: Tracking Progress</h2>
-          <p style={styles.pipelineSubtitle}>Industrial projects we're tracking aligned to US policy</p>
-          
-          {/* Main totals */}
-          <div style={styles.pipelineTotals}>
-            <div style={styles.pipelineTotalCard}>
-              <div style={styles.pipelineTotalStat}>{formatCurrency(stats.totalTracked)}</div>
-              <div style={styles.pipelineTotalLabel}>Total Tracked</div>
-              <div style={styles.pipelineTotalCount}>{stats.totalCount} opportunities</div>
-            </div>
-            <div style={styles.pipelineTotalCard}>
-              <div style={{...styles.pipelineTotalStat, color: COLORS.accent}}>{formatCurrency(stats.policyPipeline)}</div>
-              <div style={styles.pipelineTotalLabel}>Policy-Aligned</div>
-              <div style={styles.pipelineTotalCount}>{stats.policyAlignedCount} opportunities</div>
-            </div>
-          </div>
-          
-          {/* Breakdown by policy */}
-          <div style={styles.pipelineBreakdown}>
-            <div style={styles.pipelineBreakdownTitle}>By Policy Initiative:</div>
-            <div style={styles.pipelineGrid}>
-              <div style={styles.pipelineCard}>
-                <div style={{...styles.pipelineStat, color: '#f59e0b'}}>{formatCurrency(stats.stargateValue)}</div>
-                <div style={styles.pipelineLabel}>Stargate/AI Infra</div>
-                <div style={styles.pipelineCount}>{stats.stargateCount} projects</div>
-              </div>
-              <div style={styles.pipelineCard}>
-                <div style={{...styles.pipelineStat, color: '#8b5cf6'}}>{formatCurrency(stats.chipsValue)}</div>
-                <div style={styles.pipelineLabel}>CHIPS Sovereignty</div>
-                <div style={styles.pipelineCount}>{stats.chipsCount} projects</div>
-              </div>
-              <div style={styles.pipelineCard}>
-                <div style={{...styles.pipelineStat, color: '#22c55e'}}>{formatCurrency(stats.genesisValue)}</div>
-                <div style={styles.pipelineLabel}>Genesis Mission</div>
-                <div style={styles.pipelineCount}>{stats.genesisCount} projects</div>
-              </div>
-              <div style={styles.pipelineCard}>
-                <div style={{...styles.pipelineStat, color: '#06b6d4'}}>{formatCurrency(stats.nuclearValue)}</div>
-                <div style={styles.pipelineLabel}>Nuclear Restart</div>
-                <div style={styles.pipelineCount}>{stats.nuclearCount} projects</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* BOTTOM LINE */}
         <div style={styles.bottomLine}>
           <div style={styles.bottomLineText}>
             <strong>The Bottom Line:</strong> AI/automation is not "nice to have" — it is <span style={{color: COLORS.accent}}>strategic necessity</span>. 
             To compete with $6/hour labor using $30/hour labor, we need 5x productivity — achievable only through AI.
           </div>
+          <Link href="/radar" style={styles.ctaButton}>
+            View the Radar →
+          </Link>
         </div>
       </div>
     </main>
@@ -477,47 +476,155 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '5rem 2rem 3rem',
   },
   header: {
-    marginBottom: '2rem',
+    marginBottom: '2.5rem',
     textAlign: 'center',
   },
+  eyebrow: {
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    color: COLORS.accent,
+    letterSpacing: '0.15em',
+    textTransform: 'uppercase',
+    marginBottom: '0.75rem',
+  },
   title: {
-    fontSize: '2.5rem',
+    fontSize: '3rem',
     fontWeight: 800,
     margin: 0,
     marginBottom: '0.5rem',
   },
+  heroSubhead: {
+    fontSize: '1.5rem',
+    fontWeight: 500,
+    color: COLORS.accent,
+    marginBottom: '1rem',
+  },
   subtitle: {
-    fontSize: '1.125rem',
+    fontSize: '1.25rem',
     color: COLORS.textMuted,
+    maxWidth: '700px',
+    margin: '0 auto',
+    lineHeight: 1.6,
   },
   
   // Thesis Box
   thesisBox: {
-    padding: '1.5rem 2rem',
+    padding: '2rem',
     backgroundColor: COLORS.bgCard,
     border: `1px solid ${COLORS.border}`,
     borderRadius: '16px',
-    marginBottom: '2rem',
+    marginBottom: '3rem',
     textAlign: 'center',
   },
   thesisQuote: {
-    fontSize: '1.25rem',
+    fontSize: '1.375rem',
     fontStyle: 'italic',
     color: COLORS.text,
-    marginBottom: '0.75rem',
+    marginBottom: '1rem',
     lineHeight: 1.5,
   },
   thesisSubtext: {
-    fontSize: '0.9375rem',
+    fontSize: '1rem',
     color: COLORS.textMuted,
   },
   
-  // Pillars Grid
+  // Section Title
+  sectionTitle: {
+    fontSize: '1.5rem',
+    fontWeight: 700,
+    marginBottom: '1.5rem',
+    textAlign: 'center',
+  },
+  
+  // What We Track
+  whatWeTrack: {
+    marginBottom: '3rem',
+  },
+  trackingGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+    gap: '1.5rem',
+  },
+  trackingCard: {
+    padding: '1.5rem',
+    backgroundColor: COLORS.bgCard,
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: '12px',
+    textAlign: 'center',
+  },
+  trackingIcon: {
+    fontSize: '2rem',
+    marginBottom: '0.75rem',
+  },
+  trackingTitle: {
+    fontSize: '1.125rem',
+    fontWeight: 600,
+    marginBottom: '0.5rem',
+  },
+  trackingDesc: {
+    fontSize: '0.875rem',
+    color: COLORS.textMuted,
+    lineHeight: 1.5,
+    marginBottom: '1rem',
+  },
+  trackingStat: {
+    display: 'flex',
+    alignItems: 'baseline',
+    justifyContent: 'center',
+    gap: '0.5rem',
+  },
+  trackingNumber: {
+    fontSize: '2rem',
+    fontWeight: 800,
+    color: COLORS.accent,
+    fontFamily: "'JetBrains Mono', monospace",
+  },
+  trackingLabel: {
+    fontSize: '0.8125rem',
+    color: COLORS.textMuted,
+  },
+  
+  // Intelligence Section
+  intelligenceSection: {
+    marginBottom: '3rem',
+  },
+  intelligenceGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+    gap: '1rem',
+  },
+  intelligenceCard: {
+    padding: '1.25rem',
+    backgroundColor: COLORS.bgCard,
+    border: `1px solid ${COLORS.border}`,
+    borderRadius: '12px',
+    textAlign: 'center',
+  },
+  intelligenceIcon: {
+    fontSize: '1.75rem',
+    marginBottom: '0.5rem',
+  },
+  intelligenceTitle: {
+    fontSize: '1rem',
+    fontWeight: 600,
+    marginBottom: '0.5rem',
+    color: COLORS.text,
+  },
+  intelligenceDesc: {
+    fontSize: '0.8125rem',
+    color: COLORS.textMuted,
+    lineHeight: 1.4,
+    margin: 0,
+  },
+  
+  // Pillars Section
+  pillarsSection: {
+    marginBottom: '3rem',
+  },
   pillarsGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))',
     gap: '1.5rem',
-    marginBottom: '2rem',
   },
   pillarCard: {
     backgroundColor: COLORS.bgCard,
@@ -558,7 +665,7 @@ const styles: Record<string, React.CSSProperties> = {
   pillarContent: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem',
+    gap: '0.75rem',
   },
   
   // Heart - Problems
@@ -571,7 +678,7 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '0.375rem',
+    marginBottom: '0.25rem',
   },
   problemName: {
     fontWeight: 600,
@@ -584,14 +691,8 @@ const styles: Record<string, React.CSSProperties> = {
   problemPromise: {
     fontSize: '0.8125rem',
     color: COLORS.textMuted,
-    margin: '0 0 0.375rem 0',
-    lineHeight: 1.4,
-  },
-  problemBlocker: {
-    fontSize: '0.6875rem',
-    color: COLORS.warning,
     margin: 0,
-    opacity: 0.9,
+    lineHeight: 1.4,
   },
   
   // Brain - Requirements
@@ -653,13 +754,7 @@ const styles: Record<string, React.CSSProperties> = {
   
   // Urgency Section
   urgencySection: {
-    marginBottom: '2rem',
-  },
-  urgencyTitle: {
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    marginBottom: '1rem',
-    textAlign: 'center',
+    marginBottom: '3rem',
   },
   urgencyGrid: {
     display: 'grid',
@@ -684,105 +779,29 @@ const styles: Record<string, React.CSSProperties> = {
     marginTop: '0.25rem',
   },
   
-  // Pipeline Section
-  pipelineSection: {
-    marginBottom: '2rem',
-  },
-  pipelineTitle: {
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    marginBottom: '0.25rem',
-    textAlign: 'center',
-  },
-  pipelineSubtitle: {
-    fontSize: '0.875rem',
-    color: COLORS.textMuted,
-    marginBottom: '1.5rem',
-    textAlign: 'center',
-  },
-  pipelineTotals: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '1.5rem',
-    marginBottom: '1.5rem',
-  },
-  pipelineTotalCard: {
-    padding: '1.5rem',
-    backgroundColor: COLORS.bgCard,
-    border: `1px solid ${COLORS.border}`,
-    borderRadius: '16px',
-    textAlign: 'center',
-  },
-  pipelineTotalStat: {
-    fontSize: '2.5rem',
-    fontWeight: 800,
-    color: COLORS.text,
-    fontFamily: "'JetBrains Mono', monospace",
-  },
-  pipelineTotalLabel: {
-    fontSize: '1rem',
-    fontWeight: 600,
-    color: COLORS.textMuted,
-    marginTop: '0.5rem',
-  },
-  pipelineTotalCount: {
-    fontSize: '0.875rem',
-    color: COLORS.textMuted,
-    marginTop: '0.25rem',
-  },
-  pipelineBreakdown: {
-    padding: '1rem',
-    backgroundColor: COLORS.bg,
-    borderRadius: '12px',
-  },
-  pipelineBreakdownTitle: {
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    color: COLORS.textMuted,
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em',
-    marginBottom: '1rem',
-    textAlign: 'center',
-  },
-  pipelineGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-    gap: '0.75rem',
-  },
-  pipelineCard: {
-    padding: '1rem',
-    backgroundColor: COLORS.bgCard,
-    border: `1px solid ${COLORS.border}`,
-    borderRadius: '10px',
-    textAlign: 'center',
-  },
-  pipelineStat: {
-    fontSize: '1.5rem',
-    fontWeight: 700,
-    color: COLORS.accent,
-    fontFamily: "'JetBrains Mono', monospace",
-  },
-  pipelineLabel: {
-    fontSize: '0.75rem',
-    color: COLORS.textMuted,
-    marginTop: '0.25rem',
-  },
-  pipelineCount: {
-    fontSize: '0.6875rem',
-    color: COLORS.textMuted,
-    marginTop: '0.125rem',
-  },
-  
   // Bottom Line
   bottomLine: {
-    padding: '1.5rem 2rem',
+    padding: '2rem',
     backgroundColor: COLORS.accent + '11',
     border: `1px solid ${COLORS.accent}33`,
     borderRadius: '12px',
     textAlign: 'center',
   },
   bottomLineText: {
-    fontSize: '1rem',
+    fontSize: '1.125rem',
     lineHeight: 1.6,
+    marginBottom: '1.5rem',
+  },
+  ctaButton: {
+    display: 'inline-block',
+    padding: '0.875rem 2rem',
+    backgroundColor: COLORS.accent,
+    color: COLORS.bg,
+    textDecoration: 'none',
+    fontWeight: 600,
+    fontSize: '1rem',
+    borderRadius: '8px',
+    transition: 'all 0.2s',
   },
 }
+
