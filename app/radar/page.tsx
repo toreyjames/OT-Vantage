@@ -1405,29 +1405,6 @@ const styles: Record<string, React.CSSProperties> = {
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
-  detailHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: '1.5rem',
-    paddingBottom: '1rem',
-    borderBottom: `1px solid ${COLORS.border}`,
-  },
-  detailCompany: {
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    marginBottom: '0.25rem',
-  },
-  detailProject: {
-    fontSize: '0.875rem',
-    color: COLORS.textMuted,
-  },
-  detailValue: {
-    fontSize: '1.5rem',
-    fontWeight: 700,
-    color: COLORS.accent,
-    fontFamily: "'JetBrains Mono', monospace",
-  },
   policyAlignmentSection: {
     marginBottom: '1.5rem',
     padding: '1rem',
