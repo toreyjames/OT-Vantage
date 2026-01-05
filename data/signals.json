@@ -8329,5 +8329,471 @@
     "savedAt": "2026-01-05T04:50:36.177Z",
     "reviewed": false,
     "dismissed": false
+  },
+  {
+    "id": "news-1767626200494-tt43szsl1",
+    "type": "opportunity",
+    "title": "Hut 8 Selects Southeast Louisiana as Site of $10 Billion Artificial Intelligence Data Center - Louisiana Economic Development - LED (.gov)",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMizgFBVV95cUxNaExtUWlYN25xamd2akoyRmJfb3FxQldacDhDNFFfOTlTa0t4Mm5OTDRCZ3FXUEM3RmNTZ3I5cjRCdWxDYXVLX1JPYkc4TzlHOGRqbUd1X0JUbFJXOVdtcFRrem5OWVNncF9JQ0t...",
+    "source": "Louisiana Economic Development - LED (.gov)",
+    "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNaExtUWlYN25xamd2akoyRmJfb3FxQldacDhDNFFfOTlTa0t4Mm5OTDRCZ3FXUEM3RmNTZ3I5cjRCdWxDYXVLX1JPYkc4TzlHOGRqbUd1X0JUbFJXOVdtcFRrem5OWVNncF9JQ0tGWi1lcWlrNjJsYTh6R2l1X2lQQW5OODIzeURzdDIyd2loVll2RE1oaVUwTnQ5cjN3ZEQ1akR0MFF6WXdFSWdsZ2xrMFZnZGlSN0thNUVJV1dkZU9FclZ2Uk92YUdxaGFWQQ?oc=5",
+    "discoveredAt": "2025-12-17T08:00:00.000Z",
+    "confidence": 100,
+    "extractedData": {
+      "investmentAmount": "$10B",
+      "location": "Louisiana",
+      "sector": "semiconductor"
+    },
+    "suggestedSector": "semiconductor",
+    "suggestedPolicyAlignment": [
+      "chips-sovereignty",
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan",
+      "energy-dominance"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.592Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200530-sgpkaftwk",
+    "type": "opportunity",
+    "title": "Toyota Officially Confirms $10 Billion in U.S. Investment, Opens Battery Plant in North Carolina - Motor Illustrated",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMiygFBVV95cUxQSkc1dmtSbkF3YjhTTm5RblhRSU9IZU0zSHZXM05tbGwxdGExaThIWV90RTNhbnh1WGc2WEZOdXRWeWZhbC1yWURiZGEyTHl1bk9mbHZnTjNrTGpVekkzaWxocFVhMEY1VURtbHR...",
+    "source": "Motor Illustrated",
+    "url": "https://news.google.com/rss/articles/CBMiygFBVV95cUxQSkc1dmtSbkF3YjhTTm5RblhRSU9IZU0zSHZXM05tbGwxdGExaThIWV90RTNhbnh1WGc2WEZOdXRWeWZhbC1yWURiZGEyTHl1bk9mbHZnTjNrTGpVekkzaWxocFVhMEY1VURtbHRqNUVIcWk3V3BFVC0tWGhjeFFnVDRvRk9oMjhfRkhzYWYwdzVCS2E2S1BiRWQ5X0cwS1dKRkdqMHIyZmZZTVdPUmx5V2hVVGZvRXpmckpVVmlCZnJ6bHFHS3V1UWhR0gHPAUFVX3lxTE5xNDBpMFN2eVQzU1lzUkRlWW1tN2RvRUh3ci0yMXVsN29NSFd3SmhkQkYwWnM3MHJFUklHeGk0cUx4Zm9feWRQb0JhZmpjc2xtcGVqZWw3bExINnp0dy1ZS19NRHRZTGM2cW9BTVJtRE1pT2kwaUo0eDNxb1czdkJaN2ZkZHd5SGVTNG16ZW9mUWJCUi11bVBsWUZtNG9tV1VpZTQ0aWM4YlYzTnFGcXd3R0ZYR3dTWUdlRUxWbV9BQkRtZlpJdVdFVUI1REpEMA?oc=5",
+    "discoveredAt": "2025-11-12T08:00:00.000Z",
+    "confidence": 90,
+    "extractedData": {
+      "investmentAmount": "$10B",
+      "location": "North Carolina",
+      "sector": "ev-battery"
+    },
+    "suggestedSector": "ev-battery",
+    "suggestedPolicyAlignment": [
+      "energy-dominance"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.592Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200512-vzkrtepfx",
+    "type": "opportunity",
+    "title": "Amazon to Invest $50 Billion Building Data Centers to Support U.S. Government - The Wall Street Journal",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMitwNBVV95cUxQV09pMWlvM2daTEV3MFY4T2RoX2xhZWdVS2JCcnNCMVQwVkJxVERJZjQzS1hnM01ZUzRYTEtLbFNSdHZhaTJnemw2VG9ibGRlcHVMcWxtTjlFa2Z4cGxGSWFJbHc1NkhnSDQxb1I...",
+    "source": "The Wall Street Journal",
+    "url": "https://news.google.com/rss/articles/CBMitwNBVV95cUxQV09pMWlvM2daTEV3MFY4T2RoX2xhZWdVS2JCcnNCMVQwVkJxVERJZjQzS1hnM01ZUzRYTEtLbFNSdHZhaTJnemw2VG9ibGRlcHVMcWxtTjlFa2Z4cGxGSWFJbHc1NkhnSDQxb1IzMXhaMW9kZTZsS2JjQzBia2RMY2ozR0p2bVc3bnk4MTdWMVdzeXRLTFljTk9KZWhFNUoyRFYwWHJrWVBtSUhKNnlrX3VSZWVWQU1PS2hhZDV4S2x3WGt3Ui1nd21zemt3OC01SzdIZDJHeEcwMGpsemZZWkh4NF9JQVp3VHdtNzNUUTE3WENYcXNCUkRLVWc0QWFQX3NvOXpWWkRPYlFFOVY3TU56dk5iYm5LajRXSFBYZV9Xd014V2JTbWVXdFg1SGRjSWNhY3RqMmFsamh6SlJacHJkVzhLUkwyQ2ZZdDczdXk3VWV3Tzd3ZjRCU1Jxa2VjeEFfa3FralBObWJOczI2VEw1VkxTcDF6ek5aWTFvRGtLS1c2Ui1xbGt5NGpnUUxEWXNYNU9kbEVCOU9HNlpHVHlweWRLYnpfRmhWSlhsRzVpZUlDOUtz?oc=5",
+    "discoveredAt": "2025-11-24T08:00:00.000Z",
+    "confidence": 85,
+    "extractedData": {
+      "investmentAmount": "$50B",
+      "sector": "data-center"
+    },
+    "suggestedSector": "data-center",
+    "suggestedPolicyAlignment": [
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.592Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200506-amcimq6oo",
+    "type": "opportunity",
+    "title": "Amazon announces $3 billion data center planned for Warren County - Mississippi Today",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMijgFBVV95cUxQVExkS3pTSUhRZnZBcmJsV1FFYVVRV2pNYzZSX0NWZ0hJUUZOTEhCNUdXQm9rNW56N1Y5TEpQVGh6elhwaGpLZ3YzMm9uckRsWHIwcHNnbXFlbHhiWG5MWHV3Q2QwbmdRVlBVR2N...",
+    "source": "Mississippi Today",
+    "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxQVExkS3pTSUhRZnZBcmJsV1FFYVVRV2pNYzZSX0NWZ0hJUUZOTEhCNUdXQm9rNW56N1Y5TEpQVGh6elhwaGpLZ3YzMm9uckRsWHIwcHNnbXFlbHhiWG5MWHV3Q2QwbmdRVlBVR2NKY0VvXzRwUGZpVWNVU2VwMXFMWngzSkJXZDZhZHlNSjZn?oc=5",
+    "discoveredAt": "2025-11-20T08:00:00.000Z",
+    "confidence": 80,
+    "extractedData": {
+      "investmentAmount": "$3B",
+      "location": "Mississippi",
+      "sector": "data-center"
+    },
+    "suggestedSector": "data-center",
+    "suggestedPolicyAlignment": [
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.592Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200514-40obrdfmi",
+    "type": "opportunity",
+    "title": "Tech giants announce $7B data center, Michigan’s first hyperscale campus - Bridge Michigan",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMiugFBVV95cUxPNUtWc24tWVVTSlFxeXByQU9GQlg1Nl9SWkNuZ0NVSmtwVEVVcVZlRmM0dnlBWXBiZGJ5QVJuRmc3VHI0cjE4ZlJCZDY5bkZ6YU5QeXZSeG9qWmJXYVBES0NjN0dBVW0xaXMzdUR...",
+    "source": "Bridge Michigan",
+    "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPNUtWc24tWVVTSlFxeXByQU9GQlg1Nl9SWkNuZ0NVSmtwVEVVcVZlRmM0dnlBWXBiZGJ5QVJuRmc3VHI0cjE4ZlJCZDY5bkZ6YU5QeXZSeG9qWmJXYVBES0NjN0dBVW0xaXMzdURfTmF0dTBJazZER245VUR1WWc3eWZMX2pBRjJDaTQ4T0txZDVfeTBVV0trNFFGb2tUTzNhZzBzWGhRTFJPQkdodEZGUFlvLVJ6SE5oOXc?oc=5",
+    "discoveredAt": "2025-10-30T07:00:00.000Z",
+    "confidence": 80,
+    "extractedData": {
+      "investmentAmount": "$7B",
+      "location": "Michigan",
+      "sector": "data-center"
+    },
+    "suggestedSector": "data-center",
+    "suggestedPolicyAlignment": [
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.592Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200483-72afpq62h",
+    "type": "opportunity",
+    "title": "Micron to invest $9.6 billion in Japan to build AI memory chip plant, Nikkei reports - Reuters",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMixgFBVV95cUxOdkpoTXMyYjNTQUdSS0Zock4td1Zod3hwLXdHVTRoUVdWN24zcHRzbGxZM2s5enN1UXRHckI2WnViRFFwLVdWa2Z1aS1ES1E4YWEtbXJfT1NJUHNSWllManpURFd1V2pGMXEzTFd...",
+    "source": "Reuters",
+    "url": "https://news.google.com/rss/articles/CBMixgFBVV95cUxOdkpoTXMyYjNTQUdSS0Zock4td1Zod3hwLXdHVTRoUVdWN24zcHRzbGxZM2s5enN1UXRHckI2WnViRFFwLVdWa2Z1aS1ES1E4YWEtbXJfT1NJUHNSWllManpURFd1V2pGMXEzTFdpemRRc0JPTlR4MUVjSE1WLWIwOGE1WWZVZ1NSYmoxNFl3WTczb3lGRWd6RW5XV25ocHpvVk83QjlQMFJuSC0yUUxXZkFZUlVDRTV2M0QwejJrclVGLW9KMXc?oc=5",
+    "discoveredAt": "2025-11-29T08:00:00.000Z",
+    "confidence": 70,
+    "extractedData": {
+      "investmentAmount": "$9.6B",
+      "sector": "semiconductor"
+    },
+    "suggestedSector": "semiconductor",
+    "suggestedPolicyAlignment": [
+      "chips-sovereignty",
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.593Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200513-eqdtdrwp0",
+    "type": "opportunity",
+    "title": "Banks lend $18 billion for Oracle-tied data center project, Bloomberg News reports - Reuters",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMiyAFBVV95cUxNaUJ6UDRiNE01ZU5HaVR2RmNWakJaYmgxMVNVdHFRSFZvQkZLZFRRZWFGSUFMOG1YR0lkaWU2X0wwQnVyb0x1OGxaeDZYaHJhZVA2NW9oOExFeWdxVzFFVl9lQkExeDBkeFdfUUx...",
+    "source": "Reuters",
+    "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNaUJ6UDRiNE01ZU5HaVR2RmNWakJaYmgxMVNVdHFRSFZvQkZLZFRRZWFGSUFMOG1YR0lkaWU2X0wwQnVyb0x1OGxaeDZYaHJhZVA2NW9oOExFeWdxVzFFVl9lQkExeDBkeFdfUUxkd3o4RnQ0XzE2QVN4aE9vczhISDljcDQxYWc0eHJaOGM2NXFXdUZEN011eGFhQVY4dy13ZDBnR2xxNzRzVWtBV1ViNmZGcTJrN0hxWV8zTUZsQ3F1NFVSbXcxeg?oc=5",
+    "discoveredAt": "2025-11-07T08:00:00.000Z",
+    "confidence": 70,
+    "extractedData": {
+      "investmentAmount": "$18B",
+      "sector": "data-center"
+    },
+    "suggestedSector": "data-center",
+    "suggestedPolicyAlignment": [
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.593Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200472-a0vajjias",
+    "type": "opportunity",
+    "title": "Apple expands US investment to $600 billion with new program - Manufacturing Today",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMingFBVV95cUxNOW9weGRnMEhGT1U0MVM4dk02VTkyTnhfX0I5LS0wWVZYSkZCTmpLTDBSSmRRNlo3UWs4TUUyWXpxd0ZaNGxMT2VkZE43YTByVXhqelRhV1FkekxpTmR1bWVMWFF2YVk2ZFk4aWJ...",
+    "source": "Manufacturing Today",
+    "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxNOW9weGRnMEhGT1U0MVM4dk02VTkyTnhfX0I5LS0wWVZYSkZCTmpLTDBSSmRRNlo3UWs4TUUyWXpxd0ZaNGxMT2VkZE43YTByVXhqelRhV1FkekxpTmR1bWVMWFF2YVk2ZFk4aWJxMnVWUE5RODhHUFBqYi1GSHF0Q2xwZ29ZRDc5TlBZd0pURUpDS2xHajhEc0JFaDVfdw?oc=5",
+    "discoveredAt": "2025-08-11T07:00:00.000Z",
+    "confidence": 60,
+    "extractedData": {
+      "investmentAmount": "$600B",
+      "sector": "nuclear"
+    },
+    "suggestedSector": "nuclear",
+    "suggestedPolicyAlignment": [
+      "nuclear-restart",
+      "genesis-mission"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.593Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200498-a9987xwun",
+    "type": "opportunity",
+    "title": "Europe Data Center Construction Market Report 2025-2033: Digital Transformation and Cloud Adoption, Sustainability and Energy Efficiency Initiatives, Demand for Hyperscale and Colocation Facilities - ResearchAndMarkets.com - The AI Journal",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMiuwJBVV95cUxOV0MxQWtaaDd0VTdVVl9lbVVHWDZybkZ4VEpCR0JFWXRVTGtxTE5kcUVKQWxodlVQd0M2eXVEVUZxOFotaFp2dV9VX3k3WEYzSW9xUDZKOHUwRGV0aDd3LTNOUmtqYk5sTVpHS0J...",
+    "source": "The AI Journal",
+    "url": "https://news.google.com/rss/articles/CBMiuwJBVV95cUxOV0MxQWtaaDd0VTdVVl9lbVVHWDZybkZ4VEpCR0JFWXRVTGtxTE5kcUVKQWxodlVQd0M2eXVEVUZxOFotaFp2dV9VX3k3WEYzSW9xUDZKOHUwRGV0aDd3LTNOUmtqYk5sTVpHS0JmRXVmbzhDR003YndYMzNESnRlV0VMS0xvYUpCeW4tMkhHSTBmVnJjTEVFemZFYTVNeUtOMFJtWk9EcDBGemZRQmdEeW55eWREUXhkaTg2SHAwcW85MkNxRDQ4VDBiUFQtaURSY194Y1hVUUN2d2Y1V0MwZHlxU1J2YW40T0tGNk9iQjkxckJ0aHA0TnBKVmUwSXNULXg2R0dvN3hmYm9lX1lmcllfaDRkLTd1V29UaE5XdmVvYXFsMUlIT0dHRktpNGVaSzdnVlBfblJwTVk?oc=5",
+    "discoveredAt": "2026-01-01T15:32:41.000Z",
+    "confidence": 60,
+    "extractedData": {
+      "sector": "data-center"
+    },
+    "suggestedSector": "data-center",
+    "suggestedPolicyAlignment": [
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.593Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200525-dzjiiqcjx",
+    "type": "opportunity",
+    "title": "Toyota Starts Battery Production at US$14 Billion NC Plant - Mexico Business News",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMinwFBVV95cUxQbkd2ZTVZZko4LU5HclNmX0pJOEFDTWg2MmNkbmM2R1k2UWVRTktMRWV2RmtRQlltTTlnUmNJdXJ2Qlo0ZXlWenJTOHNQXy0wZmhsSHRNYVVRVjk4TmRnczFxZVROcG1uUjdsUlR...",
+    "source": "Mexico Business News",
+    "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQbkd2ZTVZZko4LU5HclNmX0pJOEFDTWg2MmNkbmM2R1k2UWVRTktMRWV2RmtRQlltTTlnUmNJdXJ2Qlo0ZXlWenJTOHNQXy0wZmhsSHRNYVVRVjk4TmRnczFxZVROcG1uUjdsUlRGMFlZTHFCcTgxUmVEaWFUM2tCX2tBRlhnOUhYd0huQjFzM0t4a3hGZUNJRWdzUzdkQVE?oc=5",
+    "discoveredAt": "2025-11-21T08:00:00.000Z",
+    "confidence": 60,
+    "extractedData": {
+      "investmentAmount": "$14B",
+      "sector": "ev-battery"
+    },
+    "suggestedSector": "ev-battery",
+    "suggestedPolicyAlignment": [
+      "energy-dominance"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.593Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200486-03ya61a8e",
+    "type": "opportunity",
+    "title": "U.S. government to invest $150 million in chip manufacturing startup xLight - Axios",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMicEFVX3lxTE5Zd1NCVTdGaUtXM1MtOXh4dFIwMjlBcEt2OXlRdm9md1NmbHprektUdi1zbi11U3pSeVlRRHpkWFp6MGFkLWtpU19hRWtZUGZ4X1htWlNnZlJvVzYxQ2FwSnZWRDRuUnN6UzItX0d...",
+    "source": "Axios",
+    "url": "https://news.google.com/rss/articles/CBMicEFVX3lxTE5Zd1NCVTdGaUtXM1MtOXh4dFIwMjlBcEt2OXlRdm9md1NmbHprektUdi1zbi11U3pSeVlRRHpkWFp6MGFkLWtpU19hRWtZUGZ4X1htWlNnZlJvVzYxQ2FwSnZWRDRuUnN6UzItX0dya2k?oc=5",
+    "discoveredAt": "2025-12-02T08:00:00.000Z",
+    "confidence": 50,
+    "extractedData": {
+      "investmentAmount": "$150M",
+      "sector": "semiconductor"
+    },
+    "suggestedSector": "semiconductor",
+    "suggestedPolicyAlignment": [
+      "chips-sovereignty",
+      "eo-14179-ai-leadership"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.594Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200525-sevdfyrt0",
+    "type": "opportunity",
+    "title": "Supplier scraps $210 million EV battery plant in Detroit over ‘current policy’ in U.S. - Automotive News",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMikgFBVV95cUxOX04td0pRQkNkU0lLQjJvVUhvUEE0d1E4LVA1QTJSUTloWnQ5bWVDWGt0Z1JaZ3dvTjRnRktad3dBc2pVYUIxN09nSEVLUWw0bzE2NnREbGRWS3U2bzROTDZScnBNdGxuSXQzTnl...",
+    "source": "Automotive News",
+    "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxOX04td0pRQkNkU0lLQjJvVUhvUEE0d1E4LVA1QTJSUTloWnQ5bWVDWGt0Z1JaZ3dvTjRnRktad3dBc2pVYUIxN09nSEVLUWw0bzE2NnREbGRWS3U2bzROTDZScnBNdGxuSXQzTnlkaUNYNTAwQmtyMDZOYk55b0hWbkgxMldlaGhvM3BTc1k0Y2dOdw?oc=5",
+    "discoveredAt": "2025-09-05T07:00:00.000Z",
+    "confidence": 50,
+    "extractedData": {
+      "investmentAmount": "$210M",
+      "sector": "ev-battery"
+    },
+    "suggestedSector": "ev-battery",
+    "suggestedPolicyAlignment": [
+      "energy-dominance"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.594Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200473-igt6787lz",
+    "type": "opportunity",
+    "title": "Making Federal Semiconductor Billions Work For Everyone - Forbes",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMisAFBVV95cUxOLUVhRHIxbFQ5VlZqMGpaS29ER0FjalFxSXpRbzB2TzdIS3IzMHBfbDBUdWlxUnByblhrWUZwbGVZRXdfRXczY0MycnJtVXI0T3RHMl8xNjFKZThfbTdFRm9BdWJrc25xVmR5S2J...",
+    "source": "Forbes",
+    "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOLUVhRHIxbFQ5VlZqMGpaS29ER0FjalFxSXpRbzB2TzdIS3IzMHBfbDBUdWlxUnByblhrWUZwbGVZRXdfRXczY0MycnJtVXI0T3RHMl8xNjFKZThfbTdFRm9BdWJrc25xVmR5S2J2d1RMX2hjODFodWtmOEdJSzk4aTgySktXVFFKbC1Dckg5VGxGSFoxbTBJQXd1VE1QZzhTeDlURWdXVW90TUhlT0hfUQ?oc=5",
+    "discoveredAt": "2025-10-10T07:00:00.000Z",
+    "confidence": 40,
+    "extractedData": {
+      "sector": "semiconductor"
+    },
+    "suggestedSector": "semiconductor",
+    "suggestedPolicyAlignment": [
+      "chips-sovereignty",
+      "eo-14179-ai-leadership",
+      "energy-dominance"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.594Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200487-2ur5oow3s",
+    "type": "opportunity",
+    "title": "9 Major Semiconductor Plant Projects Underway in the United States - constructionreviewonline.com",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMipwFBVV95cUxOajFEWVZ6Y055bnkzVzR3eE1YaV9hTEZfcG05UlpxNlB3NE9qZDU2bTRJczVSUmFYYkFtR3MtZEUydE5pd3NSMDNheEs3UFA3ZjdoMWdwakVBSkgyeEV1dzBGa1ZNTWFxQ2tvQzh...",
+    "source": "constructionreviewonline.com",
+    "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOajFEWVZ6Y055bnkzVzR3eE1YaV9hTEZfcG05UlpxNlB3NE9qZDU2bTRJczVSUmFYYkFtR3MtZEUydE5pd3NSMDNheEs3UFA3ZjdoMWdwakVBSkgyeEV1dzBGa1ZNTWFxQ2tvQzh6RmZmMk5yTFl3QVYtX1pfQVYtMmEwZ0tCSTVLdXpuVU40WGdPOTQ4VDkwdmxSdXBkcFJ1TTZ1eVoxSQ?oc=5",
+    "discoveredAt": "2025-11-15T10:55:16.000Z",
+    "confidence": 40,
+    "extractedData": {
+      "sector": "semiconductor"
+    },
+    "suggestedSector": "semiconductor",
+    "suggestedPolicyAlignment": [
+      "chips-sovereignty",
+      "eo-14179-ai-leadership",
+      "energy-dominance"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.594Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200490-06ze2cjy5",
+    "type": "opportunity",
+    "title": "Apple commits $600B to US manufacturing, sidestepping Trump’s 100% chip import tariff - Cybernews",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMiuAFBVV95cUxQZHZJUzhMTUtkbnNMenNJek9LQlZ2YzRYUVl3MG9yd2x3RDlDZjZmTlpVR29OamNNbVcxNXBsTWlFR3ZxOFN6ZWt0Q3FfZzdCUUJ1N01SSkdXX0duQUtUNk1FNjlTSG42bjhiSHF...",
+    "source": "Cybernews",
+    "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQZHZJUzhMTUtkbnNMenNJek9LQlZ2YzRYUVl3MG9yd2x3RDlDZjZmTlpVR29OamNNbVcxNXBsTWlFR3ZxOFN6ZWt0Q3FfZzdCUUJ1N01SSkdXX0duQUtUNk1FNjlTSG42bjhiSHFUTk1QTnkwei1pRGxBRWZBTDNSRElSX1pNREg4WFhpZnI5NUVXVzdQUTJfaU5fQWdqbEFyMnA2VkVnbUFXRkFzN1NWbWtMakV0UTRh?oc=5",
+    "discoveredAt": "2025-08-07T07:00:00.000Z",
+    "confidence": 40,
+    "extractedData": {
+      "investmentAmount": "$600B",
+      "sector": "semiconductor"
+    },
+    "suggestedSector": "semiconductor",
+    "suggestedPolicyAlignment": [
+      "chips-sovereignty",
+      "eo-14179-ai-leadership"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.594Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200557-agicaxeit",
+    "type": "opportunity",
+    "title": "US Energy Department offers $134M to boost rare earth recovery projects - Supply Chain Dive",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMilAFBVV95cUxNcjh5NVZONHFGVmMzUGhvMGRXUXhiUExfdnc3Ny1Gal82SzlETHlfa3dkR1dxcVZyV1QzRF90N2ViTWY0d0kweDFFX01aRU9iUERIcjVBOFEzQWhUMzdoZ21wRW1RNjJVbi1Kb1Q...",
+    "source": "Supply Chain Dive",
+    "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNcjh5NVZONHFGVmMzUGhvMGRXUXhiUExfdnc3Ny1Gal82SzlETHlfa3dkR1dxcVZyV1QzRF90N2ViTWY0d0kweDFFX01aRU9iUERIcjVBOFEzQWhUMzdoZ21wRW1RNjJVbi1Kb1QtQURVSi1MekxvSGpOa0FLM1ZncDJicGZXeWJfeG5XRjZSa0hxeWll?oc=5",
+    "discoveredAt": "2025-12-05T08:00:00.000Z",
+    "confidence": 40,
+    "extractedData": {
+      "investmentAmount": "$134M",
+      "sector": "critical-minerals"
+    },
+    "suggestedSector": "critical-minerals",
+    "suggestedPolicyAlignment": [
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan",
+      "chips-sovereignty"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.595Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200536-6azqz3vcv",
+    "type": "opportunity",
+    "title": "US raid on Hyundai-LG battery plant in Georgia sparks outcry in Korean communities - The Korea Herald",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMiV0FVX3lxTFBXT2pNZjh6eGZfRXBzNmpHSGloZ3pCZWJxZWtERlFGemRmZkRXU3ZxbUdrdzBMQkVFX1VHRjQ3MGc5M1dyaUtqdzF1T3F6N0lhWmZGczVudw?oc=5\" target=\"_blank\"&gt;US ...",
+    "source": "The Korea Herald",
+    "url": "https://news.google.com/rss/articles/CBMiV0FVX3lxTFBXT2pNZjh6eGZfRXBzNmpHSGloZ3pCZWJxZWtERlFGemRmZkRXU3ZxbUdrdzBMQkVFX1VHRjQ3MGc5M1dyaUtqdzF1T3F6N0lhWmZGczVudw?oc=5",
+    "discoveredAt": "2025-09-07T07:00:00.000Z",
+    "confidence": 30,
+    "extractedData": {
+      "location": "Georgia",
+      "sector": "ev-battery"
+    },
+    "suggestedSector": "ev-battery",
+    "suggestedPolicyAlignment": [
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan",
+      "energy-dominance"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.595Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200544-q3j5fhll4",
+    "type": "opportunity",
+    "title": "U.S. energy secretary visits site of Pennsylvania nuclear plant restart - ABC27",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMiqgFBVV95cUxObnhXYjNTeFV3UW1vVEhkdzBGVlNmRUx1MTE1YVZLazBGLW1RNEU1bnpLbGRUZVNFNTRxZUVGc2lKNTd6Y3JHSXVfMm4taTlUS2ZQZWFSMFp2SDJqWlZmOTJwQjRVUTRvWHNQXzF...",
+    "source": "ABC27",
+    "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxObnhXYjNTeFV3UW1vVEhkdzBGVlNmRUx1MTE1YVZLazBGLW1RNEU1bnpLbGRUZVNFNTRxZUVGc2lKNTd6Y3JHSXVfMm4taTlUS2ZQZWFSMFp2SDJqWlZmOTJwQjRVUTRvWHNQXzFjODBqdHBpVnNocUtfa3dzdXFENHotM3hDQzg1R2c3YkdESmpsU2s4VjhXSnJqS2hiaFMyWHBlTFpicDhBQdIBrwFBVV95cUxPTTAwdmNTcXVuZkZ2dXh6T3lZNWdCOGhLOUJNckVrTGw4WjdQSWZCM3NMZl8xMFFsdlhjRFdsb2RVeXk4UTBnNnMwaG1ZX3EyUXA0Nmx3ME1SakhyUG1JQTFaTGgzOWEzak16Rnhod19GNmxvSGVBMGs4ODhRUGdYRmxpQW5BNFpOQW1BSkI2bUFkQTBHdjl6VUdybXhqZDdqOHBWTXBNQ2JRNzdUenJj?oc=5",
+    "discoveredAt": "2025-12-17T08:00:00.000Z",
+    "confidence": 30,
+    "extractedData": {
+      "location": "Pennsylvania",
+      "sector": "nuclear"
+    },
+    "suggestedSector": "nuclear",
+    "suggestedPolicyAlignment": [
+      "nuclear-restart",
+      "genesis-mission"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.595Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626200574-f9d5jbxc0",
+    "type": "opportunity",
+    "title": "The U.S. hopes to break China's grip on rare earth metals, which are crucial in modern technology - WUNC",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMie0FVX3lxTFA4TmE4ZjNEcTdheVM1anFVdFdsaWtObGY0SHJZdVg5a2t5ZjJnNmtHa3A2bVVwbkZxVE45QTlUS3BOaUdLT3JJUUJKakZOTnVHUDVkTVJOeTZtR0F2Rk5rRU9wajVOZlhrZkV6dHN...",
+    "source": "WUNC",
+    "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFA4TmE4ZjNEcTdheVM1anFVdFdsaWtObGY0SHJZdVg5a2t5ZjJnNmtHa3A2bVVwbkZxVE45QTlUS3BOaUdLT3JJUUJKakZOTnVHUDVkTVJOeTZtR0F2Rk5rRU9wajVOZlhrZkV6dHNTZlJBR1ZjaHJIcTdPbw?oc=5",
+    "discoveredAt": "2025-09-16T07:00:00.000Z",
+    "confidence": 30,
+    "extractedData": {
+      "sector": "data-center"
+    },
+    "suggestedSector": "data-center",
+    "suggestedPolicyAlignment": [
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan",
+      "chips-sovereignty"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:16:40.595Z",
+    "reviewed": false,
+    "dismissed": false
+  },
+  {
+    "id": "news-1767626873474-uy6jpzd6n",
+    "type": "opportunity",
+    "title": "ReElement Technologies Partners with Transition Equity Partners to Expand Global Critical Mineral and Rare Earth Refining Capacity and Strengthen U.S. Supply Chains - Investing News Network",
+    "summary": "&lt;a href=\"https://news.google.com/rss/articles/CBMimgJBVV95cUxQZm1LV1lqVjltdERUN1lJZUZ6MUEySUppdFdJNEVMSzRZVFgwazZTVW52MDM1OGNfaWJha3JLUVZ6R0w4aUNfckFBU0FQbHB6TVc3ckdJMzN4STQ2MDJhREFBNTNJX2ZlZnVDb1h...",
+    "source": "Investing News Network",
+    "url": "https://news.google.com/rss/articles/CBMimgJBVV95cUxQZm1LV1lqVjltdERUN1lJZUZ6MUEySUppdFdJNEVMSzRZVFgwazZTVW52MDM1OGNfaWJha3JLUVZ6R0w4aUNfckFBU0FQbHB6TVc3ckdJMzN4STQ2MDJhREFBNTNJX2ZlZnVDb1hsaHNXemhiWjBPdWpxQlREVnYxdjZHVWM0SFZXWnVYcTdTWGREa2lvNUp0bDV2TXZBVTVNUEJoc200NVBPeHhsNmNINnlJMC1oYkR2dVBtSTQwQ0gxc2dUTzR1VW1UTHdsVGhMejJzZ0xMREdnMDhkQmlnN2ZXd3otUFYwc0d0MlFNVmtNeFloeEc0cVhyaDY0ek1XT1FNcTNFWHZYd2dIUXBNQWp4OG92UTNlU3c?oc=5",
+    "discoveredAt": "2026-01-05T14:39:56.000Z",
+    "confidence": 45,
+    "extractedData": {
+      "sector": "ev-battery"
+    },
+    "suggestedSector": "ev-battery",
+    "suggestedPolicyAlignment": [
+      "eo-14179-ai-leadership",
+      "winning-race-action-plan",
+      "energy-dominance",
+      "chips-sovereignty"
+    ],
+    "status": "new",
+    "savedAt": "2026-01-05T15:27:53.501Z",
+    "reviewed": false,
+    "dismissed": false
   }
 ]
