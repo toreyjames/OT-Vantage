@@ -1405,15 +1405,6 @@ const styles: Record<string, React.CSSProperties> = {
     textTransform: 'uppercase',
     letterSpacing: '0.05em',
   },
-  detailPanel: {
-    flex: 1,
-    padding: '1.5rem',
-    backgroundColor: COLORS.bgCard,
-    border: `1px solid ${COLORS.border}`,
-    borderRadius: '12px',
-    overflowY: 'auto',
-    maxHeight: '600px',
-  },
   detailHeader: {
     display: 'flex',
     justifyContent: 'space-between',
