@@ -120,7 +120,7 @@ export interface Opportunity {
   location: { state: string; city?: string }
   
   // BD-Specific Fields
-  procurementStage: 'monitoring' | 'pre-rfp' | 'rfp-open' | 'proposal-submitted' | 'evaluation' | 'awarded' | 'lost'
+  procurementStage: 'monitoring' | 'pre-rfp' | 'rfp-open' | 'proposal-submitted' | 'evaluation' | 'awarded' | 'lost' | 'construction'
   rfpStatus: 'not-issued' | 'expected' | 'open' | 'closed'
   rfpDueDate?: string
   rfpUrl?: string
