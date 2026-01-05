@@ -118,7 +118,7 @@ export async function classifyWithAI(
   }
   
   return {
-    relevantPolicies: [...new Set(policies)],
+    relevantPolicies: Array.from(new Set(policies)),
     impactScore: Math.min(10, impactScore),
     estimatedValue,
     summary: `Detected ${policies.length} policy alignments via keyword analysis.`,

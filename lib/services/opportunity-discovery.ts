@@ -73,7 +73,7 @@ function suggestPolicyAlignment(sector?: string, title?: string): string[] {
     alignment.push('energy-dominance')
   }
   
-  return [...new Set(alignment)]
+  return Array.from(new Set(alignment))
 }
 
 /**

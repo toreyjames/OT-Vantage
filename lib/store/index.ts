@@ -179,23 +179,25 @@ export function promoteSignal(signalId: string): StoredOpportunity | null {
     project: signal.title,
     sector: mapSector(signal.sector),
     investmentSize: signal.estimatedValue || 0,
+    jobs: 0, // To be researched
     location: signal.location || { state: 'Unknown' },
-    policyDriver: signal.relevantPolicies.join(', ') || 'General',
+    procurementStage: 'monitoring',
+    rfpStatus: 'not-issued',
+    policyDriver: (signal.relevantPolicies || []) as any,
     services: [],
     otRelevance: 'adjacent',
     nextMilestone: {
       date: new Date().toISOString().split('T')[0],
-      event: 'Needs Research',
-      daysUntil: 0,
+      label: 'Needs Research',
     },
-    strategicQuality: Math.round(signal.confidenceScore * 10) as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10,
-    priority: signal.confidenceScore >= 0.8 ? 'high' : signal.confidenceScore >= 0.5 ? 'medium' : 'low',
-    deloitteRelationship: 'no-relationship',
-    keyContact: {
-      name: 'TBD',
-      role: 'TBD',
-      lastContact: 'Never',
+    strategicQuality: {
+      frontier: 'mature' as const,
+      economicImpact: signal.confidenceScore >= 0.8 ? 'significant' as const : 'direct-only' as const,
+      note: `Auto-classified from signal with ${Math.round(signal.confidenceScore * 100)}% confidence`,
     },
+    priority: signal.confidenceScore >= 0.8 ? 'hot' : signal.confidenceScore >= 0.5 ? 'warm' : 'tracking',
+    deloitteRelationship: 'none',
+    lastUpdated: new Date().toISOString().split('T')[0],
     source: 'discovered',
     discoveredAt: new Date(signal.discoveredAt),
     promotedAt: new Date(),
@@ -216,15 +218,19 @@ export function promoteSignal(signalId: string): StoredOpportunity | null {
 }
 
 // Map signal sector to opportunity sector
-function mapSector(sector: OpportunitySignal['sector']): Opportunity['sector'] {
-  const mapping: Record<OpportunitySignal['sector'], Opportunity['sector']> = {
+function mapSector(sector: string | undefined): Opportunity['sector'] {
+  const mapping: Record<string, Opportunity['sector']> = {
     'semiconductors': 'semiconductors',
     'data-centers': 'data-centers',
-    'energy': 'energy',
+    'energy': 'clean-energy',
     'nuclear': 'nuclear',
     'ai-infrastructure': 'data-centers',
+    'clean-energy': 'clean-energy',
+    'ev-battery': 'ev-battery',
+    'critical-minerals': 'critical-minerals',
+    'defense': 'defense',
   }
-  return mapping[sector] || 'data-centers'
+  return mapping[sector || ''] || 'data-centers'
 }
 
 // ============================================================================

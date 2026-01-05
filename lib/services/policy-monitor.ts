@@ -81,7 +81,7 @@ function determinePolicyAlignment(keywords: string[], agencies: string[]): strin
     }
   }
   
-  return [...new Set(alignment)] // Dedupe
+  return Array.from(new Set(alignment)) // Dedupe
 }
 
 /**
