@@ -16,10 +16,10 @@
 
 ## Scene-by-Scene Script & Storyboard
 
-### SCENE 1: Opening - The Build Clock Opportunity (0:00-0:45)
+### SCENE 1: Opening - The OT Vantage Opportunity (0:00-0:45)
 
 **VISUAL:**
-- Animated Build Clock visualization
+- Animated OT Vantage visualization
 - Numbers counting up to $800B+
 - Sector icons appearing: semiconductors, batteries, rare earths, nuclear, grid
 - Deloitte logo in corner
@@ -100,7 +100,7 @@
 ### SCENE 5: Closing - The Strategic Imperative (4:30-5:00)
 
 **VISUAL:**
-- Build Clock visualization returns
+- OT Vantage visualization returns
 - Question mark transforms to checkmark
 - Deloitte logo and contact information
 - Final statistic overlay
@@ -138,7 +138,7 @@
 - **Professional pacing:** Not too fast, executive-friendly
 
 ### Graphics Requirements
-- **Build Clock visualization:** Animated counter/gauge
+- **OT Vantage visualization:** Animated counter/gauge
 - **Labor cost comparison:** Side-by-side bar chart or infographic
 - **Process flow:** Before/after comparison with arrows
 - **Sector icons:** Clean, recognizable icons for each sector
@@ -229,6 +229,7 @@
 - Include closed captions for accessibility
 - Consider multiple language versions if needed
 - Coordinate with Deloitte marketing/communications team
+
 
 
 

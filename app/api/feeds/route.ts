@@ -1,10 +1,11 @@
 // Real-time feeds API
 // Fetches live policy updates and opportunity signals
+// DYNAMIC: Auto-generates searches from 100+ tracked companies
 // Note: On Vercel, file system is read-only so we skip persistence
 
 import { NextResponse } from 'next/server'
 import { checkPolicyFeeds } from '@/lib/services/policy-monitor'
-import { discoverOpportunities } from '@/lib/services/opportunity-discovery'
+import { discoverOpportunities, getDiscoveryStats } from '@/lib/services/opportunity-discovery'
 import { generateInsights } from '@/lib/services/ai-classifier'
 import { SystemStatus } from '@/lib/services/types'
 
@@ -75,23 +76,44 @@ export async function GET(request: Request) {
     
     const responseTime = Date.now() - startTime
     
+    // Get dynamic tracking stats
+    const discoveryStats = getDiscoveryStats()
+    
+    // Separate new discoveries from known company news
+    const newDiscoveries = opportunitySignals.filter((s: any) => s.isNewDiscovery)
+    const knownCompanyNews = opportunitySignals.filter((s: any) => !s.isNewDiscovery)
+    
     return NextResponse.json({
       success: true,
       data: {
         policyUpdates: policyUpdates.slice(0, 50),
         opportunitySignals: opportunitySignals.slice(0, 50),
+        // NEW: Separate feeds for discoveries vs known companies
+        newDiscoveries: newDiscoveries.slice(0, 25),
+        knownCompanyNews: knownCompanyNews.slice(0, 25),
         insights,
         status,
         store: {
           savedSignals,
           savedUpdates,
           stats: storeStats,
+        },
+        // SMART DISCOVERY TRACKING INFO
+        tracking: {
+          companiesTracked: discoveryStats.trackedCompanies,
+          activeQueries: discoveryStats.activeQueries,
+          eventDiscoveryQueries: discoveryStats.eventDiscoveryQueries,
+          pendingDiscoveries: discoveryStats.pendingDiscoveries,
+          promotedDiscoveries: discoveryStats.promotedDiscoveries,
+          sampleCompanies: discoveryStats.companySample,
+          sampleQueries: discoveryStats.querySample,
         }
       },
       meta: {
         responseTimeMs: responseTime,
         timestamp: new Date().toISOString(),
-        environment: isVercel ? 'vercel' : 'local'
+        environment: isVercel ? 'vercel' : 'local',
+        mode: 'SMART_DISCOVERY' // Event-based discovery with company extraction
       }
     })
   } catch (error) {

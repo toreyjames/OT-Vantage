@@ -102,7 +102,7 @@ export default function MonitorPage() {
       <nav style={styles.nav}>
         <div style={styles.navBrand}>
           <div style={styles.brandIcon}>⚡</div>
-          <span style={styles.brandText}>Build Clock</span>
+          <span style={styles.brandText}>OT Vantage</span>
         </div>
         <div style={styles.navLinks}>
           <Link href="/radar" style={styles.navLink}>Radar</Link>

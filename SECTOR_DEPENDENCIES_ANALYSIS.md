@@ -5,7 +5,7 @@
 
 ## The Core Insight
 
-You can't build the end product without the prerequisites. The Build Clock tracks **$800B+ in announced investments**, but many of these depend on **unsexy, foundational infrastructure** that doesn't get headlines.
+You can't build the end product without the prerequisites. The OT Vantage tracks **$800B+ in announced investments**, but many of these depend on **unsexy, foundational infrastructure** that doesn't get headlines.
 
 **Example:** You want rare earth magnets for EVs → but you need rare earth **refining** first. The U.S. has rare earth **mining** (Mountain Pass, CA), but **refining** is dominated by China.
 
@@ -517,6 +517,7 @@ For each sector, we should create a deep-dive that includes:
 4. **Build eminence** around understanding the whole system
 
 **The insight:** The build economy isn't just about building end products. It's about building the **prerequisites** that enable end products. And every prerequisite needs OT security.
+
 
 
 

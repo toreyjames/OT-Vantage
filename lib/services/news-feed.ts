@@ -1,7 +1,10 @@
 /**
- * News Feed Integration
- * Fetches investment/infrastructure news from various sources
+ * SMART DISCOVERY News Feed Integration
+ * EVENT-BASED: Searches for events (funding, partnerships, approvals) not just companies
+ * Extracts company names from results and flags unknown companies as NEW DISCOVERIES
  */
+
+import { opportunities } from '@/lib/data/opportunities'
 
 export interface NewsItem {
   id: string
@@ -17,21 +20,312 @@ export interface NewsItem {
     location?: string
     sector?: string
   }
+  // NEW: Discovery fields
+  extractedCompanyNames: string[]
+  isNewDiscovery: boolean
+  discoverySource?: string
 }
 
-// Search queries for relevant news
-const SEARCH_QUERIES = [
-  'semiconductor factory investment US',
-  'data center construction announcement',
-  'battery plant investment America',
-  'nuclear power plant restart',
-  'rare earth mining US',
-  'EV battery gigafactory',
-  'AI infrastructure investment',
-  'CHIPS Act funding',
-  'DOE loan guarantee',
-  'critical minerals processing',
+// ============================================================================
+// EVENT-BASED DISCOVERY QUERIES
+// Search for EVENTS to find unknown companies, not just track known ones
+// ============================================================================
+
+const EVENT_DISCOVERY_QUERIES: Record<string, string[]> = {
+  nuclear: [
+    'nuclear startup raises funding',
+    'nuclear company Series A B C funding',
+    'SMR company DOE approval',
+    'nuclear power partnership announced',
+    'advanced reactor company investment',
+    'nuclear energy startup secures',
+    'fission company funding round',
+    'nuclear license NRC approval',
+  ],
+  fusion: [
+    'fusion startup funding round',
+    'fusion company partnership',
+    'fusion breakthrough announcement',
+    'fusion energy investment million billion',
+    'fusion reactor company raises',
+    'fusion startup Series funding',
+  ],
+  semiconductor: [
+    'chip company investment billion',
+    'semiconductor startup funding',
+    'fab company breaks ground',
+    'chip maker announces factory',
+    'semiconductor firm raises',
+    'foundry company expansion',
+  ],
+  'data-center': [
+    'data center company investment',
+    'hyperscale operator announces',
+    'cloud infrastructure company funding',
+    'data center developer breaks ground',
+    'AI infrastructure company raises',
+  ],
+  'ev-battery': [
+    'battery startup funding round',
+    'EV battery company investment',
+    'gigafactory company announces',
+    'battery manufacturer raises',
+    'cell production company funding',
+  ],
+  'critical-minerals': [
+    'rare earth company funding',
+    'lithium mining company investment',
+    'critical minerals startup raises',
+    'mineral processing company announces',
+  ],
+  defense: [
+    'defense manufacturing modernization',
+    'GE Aerospace facility expansion',
+    'Navy shipyard modernization',
+    'defense contractor factory investment',
+    'military depot OT modernization',
+    'AUKUS submarine production',
+    'defense industrial base cybersecurity',
+    'Lockheed Martin production expansion',
+    'Northrop Grumman facility announcement',
+    'munitions plant expansion',
+  ],
+  'life-sciences': [
+    'pharmaceutical facility construction',
+    'biomanufacturing plant investment',
+    'pharma factory expansion',
+    'cell therapy manufacturing facility',
+    'gene therapy production site',
+    'Eli Lilly manufacturing expansion',
+    'Novo Nordisk facility investment',
+    'Moderna mRNA manufacturing plant',
+    'pharma onshoring domestic production',
+    'FDA facility inspection warning',
+  ],
+  // Cross-sector high-signal queries
+  partnerships: [
+    'Meta nuclear power partnership',
+    'Google nuclear energy deal',
+    'Microsoft power purchase agreement',
+    'Amazon data center nuclear',
+    'tech giant energy partnership',
+    'Big Tech nuclear deal announced',
+    'AI company energy partnership',
+  ],
+  policy: [
+    'DOE loan guarantee awarded',
+    'CHIPS Act funding announced',
+    'Trump administration energy investment',
+    'federal funding clean energy',
+    'NRC license approved',
+    'state incentive energy company',
+  ],
+}
+
+/**
+ * Get all event-based discovery queries
+ */
+function getEventDiscoveryQueries(): string[] {
+  const queries: string[] = []
+  for (const sectorQueries of Object.values(EVENT_DISCOVERY_QUERIES)) {
+    queries.push(...sectorQueries)
+  }
+  return queries
+}
+
+// ============================================================================
+// COMPANY NAME EXTRACTION
+// Extract potential company names from news text
+// ============================================================================
+
+// Common company suffixes
+const COMPANY_SUFFIXES = [
+  'Inc', 'Inc.', 'Corp', 'Corp.', 'Corporation', 'LLC', 'Ltd', 'Ltd.',
+  'Energy', 'Power', 'Systems', 'Technologies', 'Tech', 'Nuclear', 'Fusion',
+  'Industries', 'Group', 'Holdings', 'Partners', 'Ventures', 'Labs', 'Co', 'Co.'
 ]
+
+// Action words that often precede company names in news
+const ACTION_WORDS = [
+  'announces', 'announced', 'reveals', 'revealed', 'unveils', 'unveiled',
+  'raises', 'raised', 'secures', 'secured', 'receives', 'received',
+  'signs', 'signed', 'partners', 'partnered', 'acquires', 'acquired',
+  'invests', 'invested', 'commits', 'committed', 'launches', 'launched',
+  'breaks ground', 'broke ground', 'begins', 'began', 'starts', 'started',
+  'expands', 'expanded', 'opens', 'opened', 'builds', 'building'
+]
+
+/**
+ * Extract potential company names from text
+ * Uses multiple strategies to find company names
+ */
+export function extractCompanyNames(text: string): string[] {
+  const companies = new Set<string>()
+  const originalText = text // Keep original case for extraction
+  
+  // Strategy 1: Find capitalized word sequences (2-4 words)
+  const capitalizedPattern = /\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,3})\b/g
+  let match
+  while ((match = capitalizedPattern.exec(originalText)) !== null) {
+    const candidate = match[1]
+    // Check if it looks like a company name
+    if (COMPANY_SUFFIXES.some(suffix => candidate.endsWith(suffix)) ||
+        candidate.length > 3) {
+      companies.add(candidate)
+    }
+  }
+  
+  // Strategy 2: Look for patterns like "Company X announces/raises/etc"
+  for (const action of ACTION_WORDS) {
+    // Pattern: Company Name + action word
+    const beforePattern = new RegExp(`([A-Z][A-Za-z]+(?:\\s+[A-Z][A-Za-z]+){0,3})\\s+${action}`, 'g')
+    while ((match = beforePattern.exec(originalText)) !== null) {
+      const candidate = match[1].trim()
+      if (candidate.length > 2 && !isCommonWord(candidate)) {
+        companies.add(candidate)
+      }
+    }
+  }
+  
+  // Strategy 3: Look for company suffixes
+  for (const suffix of COMPANY_SUFFIXES) {
+    const suffixPattern = new RegExp(`([A-Z][A-Za-z]+(?:\\s+[A-Z][A-Za-z]+){0,2})\\s+${suffix}\\b`, 'g')
+    while ((match = suffixPattern.exec(originalText)) !== null) {
+      const candidate = `${match[1]} ${suffix}`.trim()
+      companies.add(candidate)
+    }
+  }
+  
+  // Strategy 4: Known patterns for specific formats
+  // e.g., "XYZ Corp" or "ABC Inc"
+  const corpPattern = /\b([A-Z][A-Za-z]*(?:\s+[A-Z][A-Za-z]*)?)\s+(Corp|Inc|LLC|Ltd|Energy|Power|Nuclear|Fusion)\b/g
+  while ((match = corpPattern.exec(originalText)) !== null) {
+    companies.add(`${match[1]} ${match[2]}`)
+  }
+  
+  // Filter out common false positives
+  const filtered = Array.from(companies).filter(name => {
+    const lower = name.toLowerCase()
+    return !isCommonWord(name) && 
+           name.length > 2 &&
+           !lower.startsWith('the ') &&
+           !lower.startsWith('a ') &&
+           name.split(' ').length <= 4
+  })
+  
+  return filtered
+}
+
+/**
+ * Check if a word is a common word (not a company name)
+ */
+function isCommonWord(word: string): boolean {
+  const commonWords = new Set([
+    'The', 'This', 'That', 'These', 'Those', 'Some', 'Many', 'Several',
+    'New', 'First', 'Last', 'Next', 'Other', 'Another', 'Each', 'Every',
+    'United', 'States', 'America', 'American', 'National', 'Federal',
+    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+    'January', 'February', 'March', 'April', 'May', 'June', 'July', 
+    'August', 'September', 'October', 'November', 'December',
+    'Wall Street', 'White House', 'New York', 'Los Angeles', 'San Francisco',
+    'According', 'Reuters', 'Bloomberg', 'Associated Press', 'AP News',
+    'Source', 'Report', 'News', 'Update', 'Breaking'
+  ])
+  return commonWords.has(word) || commonWords.has(word.split(' ')[0])
+}
+
+// ============================================================================
+// KNOWN COMPANIES DATABASE
+// ============================================================================
+
+/**
+ * Extract all unique company names from the opportunities database
+ */
+function getTrackedCompanies(): string[] {
+  const companies = new Set<string>()
+  for (const opp of opportunities) {
+    if (opp.company) {
+      companies.add(opp.company)
+    }
+  }
+  return Array.from(companies)
+}
+
+/**
+ * Get tracked companies as lowercase set for fast lookup
+ */
+function getTrackedCompaniesLower(): Set<string> {
+  const companies = new Set<string>()
+  for (const opp of opportunities) {
+    if (opp.company) {
+      companies.add(opp.company.toLowerCase())
+    }
+  }
+  return companies
+}
+
+// Build company-to-sector map from opportunities database
+function buildCompanySectorMap(): Map<string, string> {
+  const map = new Map<string, string>()
+  for (const opp of opportunities) {
+    if (opp.company && opp.sector) {
+      map.set(opp.company.toLowerCase(), opp.sector)
+    }
+  }
+  return map
+}
+
+const COMPANY_SECTOR_MAP = buildCompanySectorMap()
+
+// ============================================================================
+// SECTOR DETECTION
+// ============================================================================
+
+const SECTOR_KEYWORDS: Record<string, string[]> = {
+  'semiconductor': [
+    'semiconductor', 'chip', 'fab', 'foundry', 'wafer', 'chipmaker',
+    'TSMC', 'Intel', 'Samsung', 'Micron', 'GlobalFoundries', 'Texas Instruments',
+    'Nvidia', 'AMD', 'Qualcomm', 'Broadcom', 'SK Hynix'
+  ],
+  'data-center': [
+    'data center', 'hyperscale', 'cloud', 'colocation', 'server farm',
+    'AWS', 'Azure', 'Google Cloud', 'Meta', 'Oracle', 'Equinix', 'Digital Realty'
+  ],
+  'ev-battery': [
+    'battery', 'EV', 'electric vehicle', 'gigafactory', 'lithium-ion', 'cell production',
+    'Tesla', 'Panasonic', 'LG Energy', 'CATL', 'SK On', 'Samsung SDI', 'Rivian', 'Lucid'
+  ],
+  'nuclear': [
+    'nuclear', 'reactor', 'SMR', 'uranium', 'atomic', 'fission', 'nuclear power',
+    'Oklo', 'NuScale', 'TerraPower', 'X-energy', 'Kairos Power', 'Terrestrial Energy',
+    'Lightbridge', 'BWXT', 'Westinghouse', 'GE Hitachi', 'Holtec'
+  ],
+  'fusion': [
+    'fusion', 'fusion energy', 'fusion reactor', 'plasma', 'tokamak', 'stellarator',
+    'Helion', 'Commonwealth Fusion', 'TAE Technologies', 'General Fusion', 'Zap Energy',
+    'Type One Energy', 'Tokamak Energy', 'First Light Fusion', 'Marvel Fusion'
+  ],
+  'clean-energy': [
+    'solar', 'wind', 'renewable', 'hydrogen', 'grid', 'transmission', 'geothermal',
+    'offshore wind', 'green hydrogen', 'clean energy'
+  ],
+  'critical-minerals': [
+    'rare earth', 'lithium', 'cobalt', 'nickel', 'gallium', 'germanium', 'mining', 'refining',
+    'graphite', 'manganese', 'vanadium', 'critical mineral'
+  ],
+  'defense': [
+    'defense', 'aerospace', 'military', 'DoD', 'shipyard', 'munitions', 'depot',
+    'GE Aerospace', 'Lockheed Martin', 'Northrop Grumman', 'RTX', 'Raytheon',
+    'L3Harris', 'BAE Systems', 'General Dynamics', 'Huntington Ingalls',
+    'AUKUS', 'CMMC', 'F-35', 'submarine', 'Navy', 'defense industrial base'
+  ],
+  'life-sciences': [
+    'pharmaceutical', 'pharma', 'biomanufacturing', 'biotech', 'GxP', 'cGMP',
+    'Pfizer', 'Moderna', 'Eli Lilly', 'Novo Nordisk', 'Merck', 'AbbVie',
+    'Johnson & Johnson', 'Amgen', 'Roche', 'AstraZeneca',
+    'FDA', 'cleanroom', 'cell therapy', 'gene therapy', 'biologics'
+  ],
+}
 
 // Patterns to extract investment amounts
 const INVESTMENT_PATTERNS = [
@@ -39,12 +333,6 @@ const INVESTMENT_PATTERNS = [
   /\$(\d+(?:\.\d+)?)\s*(million|M\b)/i,
   /(\d+(?:\.\d+)?)\s*billion\s*dollar/i,
   /(\d+(?:\.\d+)?)\s*million\s*dollar/i,
-]
-
-// Company name patterns (common in announcements)
-const COMPANY_INDICATORS = [
-  'announced', 'plans to', 'will invest', 'committed', 'building', 
-  'constructing', 'expanding', 'investing'
 ]
 
 // Location patterns
@@ -61,22 +349,21 @@ const US_STATES = [
   'West Virginia', 'Wisconsin', 'Wyoming'
 ]
 
-// Sector keywords
-const SECTOR_KEYWORDS: Record<string, string[]> = {
-  'semiconductor': ['semiconductor', 'chip', 'fab', 'foundry', 'wafer', 'TSMC', 'Intel', 'Samsung', 'Micron', 'GlobalFoundries'],
-  'data-center': ['data center', 'hyperscale', 'cloud', 'AWS', 'Azure', 'Google Cloud', 'Meta', 'Oracle'],
-  'ev-battery': ['battery', 'EV', 'electric vehicle', 'gigafactory', 'lithium-ion', 'cell production'],
-  'nuclear': ['nuclear', 'reactor', 'SMR', 'uranium', 'atomic'],
-  'clean-energy': ['solar', 'wind', 'renewable', 'hydrogen', 'grid', 'transmission'],
-  'critical-minerals': ['rare earth', 'lithium', 'cobalt', 'nickel', 'gallium', 'germanium', 'mining', 'refining'],
-}
-
 /**
  * Extract structured data from news text
  */
 function extractData(title: string, description: string): NewsItem['extractedData'] {
   const text = `${title} ${description}`.toLowerCase()
   const result: NewsItem['extractedData'] = {}
+  
+  // Try to match company from our database first
+  for (const [companyLower, sector] of COMPANY_SECTOR_MAP.entries()) {
+    if (text.includes(companyLower)) {
+      result.company = companyLower
+      result.sector = sector
+      break
+    }
+  }
   
   // Extract investment amount
   for (const pattern of INVESTMENT_PATTERNS) {
@@ -101,11 +388,13 @@ function extractData(title: string, description: string): NewsItem['extractedDat
     }
   }
   
-  // Extract sector
-  for (const [sector, keywords] of Object.entries(SECTOR_KEYWORDS)) {
-    if (keywords.some(kw => text.includes(kw.toLowerCase()))) {
-      result.sector = sector
-      break
+  // Extract sector if not already set from company match
+  if (!result.sector) {
+    for (const [sector, keywords] of Object.entries(SECTOR_KEYWORDS)) {
+      if (keywords.some(kw => text.includes(kw.toLowerCase()))) {
+        result.sector = sector
+        break
+      }
     }
   }
   
@@ -113,35 +402,86 @@ function extractData(title: string, description: string): NewsItem['extractedDat
 }
 
 /**
+ * Check if ANY extracted company is new (not in our database)
+ */
+function checkForNewDiscovery(extractedNames: string[], trackedLower: Set<string>): boolean {
+  for (const name of extractedNames) {
+    if (!trackedLower.has(name.toLowerCase())) {
+      return true // Found a company we don't track!
+    }
+  }
+  return false
+}
+
+/**
  * Calculate relevance score for a news item
  */
-function calculateRelevance(title: string, description: string): number {
+function calculateRelevance(title: string, description: string, isNewDiscovery: boolean): number {
   const text = `${title} ${description}`.toLowerCase()
   let score = 0
+  
+  // NEW DISCOVERY BOOST - This is what we're looking for!
+  if (isNewDiscovery) {
+    score += 40
+  }
   
   // Check for investment amounts (strong signal)
   if (INVESTMENT_PATTERNS.some(p => p.test(text))) {
     score += 30
   }
   
+  // Boost if mentions a tracked company
+  const trackedLower = getTrackedCompaniesLower()
+  for (const company of trackedLower) {
+    if (text.includes(company)) {
+      score += 25
+      break
+    }
+  }
+  
   // Check for sector keywords
   for (const keywords of Object.values(SECTOR_KEYWORDS)) {
     const matches = keywords.filter(kw => text.includes(kw.toLowerCase()))
-    score += matches.length * 10
+    score += matches.length * 8
   }
   
   // Check for US location
   if (US_STATES.some(s => text.includes(s.toLowerCase()))) {
-    score += 20
-  }
-  
-  // Check for action words
-  if (COMPANY_INDICATORS.some(w => text.includes(w))) {
     score += 15
   }
   
-  // Bonus for specific high-value terms
-  const highValueTerms = ['billion', 'gigafactory', 'megafab', 'construction', 'groundbreaking']
+  // Partnership & deal announcements (HIGHEST value)
+  const partnershipTerms = ['partnership', 'deal', 'agreement', 'signs', 'announces', 'invests', 'acquires', 'backs', 'commits']
+  if (partnershipTerms.some(t => text.includes(t))) {
+    score += 25
+  }
+  
+  // Fusion keyword (breakthrough tech - always relevant)
+  if (text.includes('fusion')) {
+    score += 30
+  }
+  
+  // Big Tech + Energy (MASSIVE signal - Meta+Oklo type news)
+  const bigTech = ['meta', 'facebook', 'google', 'microsoft', 'amazon', 'apple', 'openai', 'anthropic']
+  const energyTerms = ['nuclear', 'energy', 'power', 'fusion', 'reactor', 'data center']
+  if (bigTech.some(t => text.includes(t)) && energyTerms.some(e => text.includes(e))) {
+    score += 50
+  }
+  
+  // Trump/policy related investments
+  if ((text.includes('trump') || text.includes('administration') || text.includes('white house')) && 
+      (text.includes('invest') || text.includes('fund') || text.includes('energy') || text.includes('deal'))) {
+    score += 30
+  }
+  
+  // Breaking news signals
+  const breakingTerms = ['breaking', 'just announced', 'announces', 'unveils', 'reveals', 'confirms']
+  if (breakingTerms.some(t => text.includes(t))) {
+    score += 20
+  }
+  
+  // High-value terms
+  const highValueTerms = ['billion', 'gigafactory', 'megafab', 'construction', 'groundbreaking', 'first-ever', 'historic']
   if (highValueTerms.some(t => text.includes(t))) {
     score += 20
   }
@@ -156,9 +496,11 @@ async function fetchGoogleNewsRSS(query: string): Promise<NewsItem[]> {
   const encodedQuery = encodeURIComponent(query)
   const rssUrl = `https://news.google.com/rss/search?q=${encodedQuery}&hl=en-US&gl=US&ceid=US:en`
   
+  const trackedLower = getTrackedCompaniesLower()
+  
   try {
     const response = await fetch(rssUrl, {
-      next: { revalidate: 1800 }, // Cache for 30 minutes
+      next: { revalidate: 900 }, // Cache for 15 minutes
     })
     
     if (!response.ok) {
@@ -168,7 +510,6 @@ async function fetchGoogleNewsRSS(query: string): Promise<NewsItem[]> {
     
     const xml = await response.text()
     
-    // Simple XML parsing for RSS
     const items: NewsItem[] = []
     const itemRegex = /<item>([\s\S]*?)<\/item>/g
     let match
@@ -185,10 +526,19 @@ async function fetchGoogleNewsRSS(query: string): Promise<NewsItem[]> {
       if (titleMatch && linkMatch) {
         const title = titleMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '').trim()
         const description = descMatch ? descMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>/g, '').trim() : ''
-        const relevanceScore = calculateRelevance(title, description)
         
-        // Only include if relevance score is high enough
-        if (relevanceScore >= 30) {
+        // Extract company names from the news
+        const fullText = `${title} ${description}`
+        const extractedCompanyNames = extractCompanyNames(fullText)
+        
+        // Check if this is a NEW discovery
+        const isNewDiscovery = extractedCompanyNames.length > 0 && 
+                               checkForNewDiscovery(extractedCompanyNames, trackedLower)
+        
+        const relevanceScore = calculateRelevance(title, description, isNewDiscovery)
+        
+        // Lower threshold to catch more discoveries
+        if (relevanceScore >= 15) {
           items.push({
             id: `news-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             title,
@@ -198,6 +548,9 @@ async function fetchGoogleNewsRSS(query: string): Promise<NewsItem[]> {
             publishedAt: dateMatch ? new Date(dateMatch[1].trim()).toISOString() : new Date().toISOString(),
             relevanceScore,
             extractedData: extractData(title, description),
+            extractedCompanyNames,
+            isNewDiscovery,
+            discoverySource: query,
           })
         }
       }
@@ -211,30 +564,98 @@ async function fetchGoogleNewsRSS(query: string): Promise<NewsItem[]> {
 }
 
 /**
- * Fetch news from multiple queries and deduplicate
+ * Generate queries that prioritize EVENT discovery over company tracking
  */
-export async function fetchRelevantNews(queries: string[] = SEARCH_QUERIES.slice(0, 5)): Promise<NewsItem[]> {
+function generateSmartDiscoveryQueries(): string[] {
+  const queries: string[] = []
+  
+  // 1. EVENT-BASED DISCOVERY QUERIES (primary - find unknown companies)
+  queries.push(...getEventDiscoveryQueries())
+  
+  // 2. Priority company searches (secondary - track important known companies)
+  const priorityCompanies = [
+    'Oklo', 'Helion', 'Commonwealth Fusion', 'NuScale', 'TerraPower',
+    'TSMC', 'Intel', 'Microsoft', 'Google', 'Amazon', 'Meta',
+  ]
+  for (const company of priorityCompanies) {
+    queries.push(`${company} announcement news`)
+  }
+  
+  // 3. Time-rotated company sampling (cover all tracked companies over time)
+  const trackedCompanies = getTrackedCompanies()
+  const hour = new Date().getHours()
+  const chunkSize = Math.ceil(trackedCompanies.length / 24)
+  const startIdx = (hour * chunkSize) % trackedCompanies.length
+  const sampledCompanies = trackedCompanies.slice(startIdx, startIdx + 10)
+  
+  for (const company of sampledCompanies) {
+    queries.push(`${company} news`)
+  }
+  
+  return queries
+}
+
+/**
+ * Fetch news using SMART DISCOVERY
+ * Prioritizes EVENT-based queries to find unknown companies
+ */
+export async function fetchRelevantNews(customQueries?: string[]): Promise<NewsItem[]> {
   const allItems: NewsItem[] = []
   const seenUrls = new Set<string>()
   
-  // Fetch from multiple queries in parallel
-  const results = await Promise.all(
-    queries.map(q => fetchGoogleNewsRSS(q))
-  )
+  // Generate smart discovery queries or use custom ones
+  const queries = customQueries || generateSmartDiscoveryQueries()
   
-  for (const items of results) {
-    for (const item of items) {
-      // Deduplicate by URL
-      if (!seenUrls.has(item.url)) {
-        seenUrls.add(item.url)
-        allItems.push(item)
+  // Limit concurrent requests but cover more ground
+  const queryBatches: string[][] = []
+  const batchSize = 10
+  for (let i = 0; i < queries.length; i += batchSize) {
+    queryBatches.push(queries.slice(i, i + batchSize))
+  }
+  
+  // Process first 4 batches (40 queries) for broader coverage
+  const activeBatches = queryBatches.slice(0, 4)
+  
+  for (const batch of activeBatches) {
+    const results = await Promise.all(
+      batch.map(q => fetchGoogleNewsRSS(q))
+    )
+    
+    for (const items of results) {
+      for (const item of items) {
+        if (!seenUrls.has(item.url)) {
+          seenUrls.add(item.url)
+          allItems.push(item)
+        }
       }
     }
   }
   
-  // Sort by relevance score
+  // Sort by relevance score (highest first) - NEW DISCOVERIES will rank higher
   return allItems.sort((a, b) => b.relevanceScore - a.relevanceScore)
 }
+
+/**
+ * Get statistics about what's being tracked
+ */
+export function getTrackingStats() {
+  const companies = getTrackedCompanies()
+  const queries = generateSmartDiscoveryQueries()
+  const eventQueries = getEventDiscoveryQueries()
+  
+  return {
+    trackedCompanies: companies.length,
+    activeQueries: queries.length,
+    eventDiscoveryQueries: eventQueries.length,
+    companySample: companies.slice(0, 10),
+    querySample: queries.slice(0, 10),
+  }
+}
+
+/**
+ * Export tracked companies for other services
+ */
+export { getTrackedCompanies, getTrackedCompaniesLower }
 
 /**
  * Convert news item to opportunity signal format
@@ -249,6 +670,9 @@ export function newsToSignal(news: NewsItem): {
   discoveredAt: string
   confidence: number
   extractedData: NewsItem['extractedData']
+  extractedCompanyNames: string[]
+  isNewDiscovery: boolean
+  discoverySource?: string
 } {
   return {
     id: news.id,
@@ -260,6 +684,8 @@ export function newsToSignal(news: NewsItem): {
     discoveredAt: news.publishedAt,
     confidence: Math.min(100, news.relevanceScore),
     extractedData: news.extractedData,
+    extractedCompanyNames: news.extractedCompanyNames,
+    isNewDiscovery: news.isNewDiscovery,
+    discoverySource: news.discoverySource,
   }
 }
-

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { opportunities, type Opportunity } from '../../lib/data/opportunities'
 
 // ============================================================================
-// COLORS & THEME (matching Build Clock)
+// COLORS & THEME (matching OT Vantage)
 // ============================================================================
 const COLORS = {
   bg: '#0a0f14',
@@ -219,7 +219,7 @@ export default function OpportunitiesPage() {
       <div style={styles.container}>
         <header style={styles.header}>
           <div>
-            <Link href="/" style={styles.backLink}>← Build Clock</Link>
+            <Link href="/" style={styles.backLink}>← OT Vantage</Link>
             <h1 style={styles.title}>
               <span style={{ color: COLORS.accent }}>OPPORTUNITY</span> RADAR
             </h1>

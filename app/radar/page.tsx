@@ -57,6 +57,12 @@ const getPrerequisites = (sector: Opportunity['sector'], project: string): strin
       'Energy Storage',
       'Rare Earth Magnets (for wind)',
     ],
+    'grid-infrastructure': [
+      'Skilled Labor (Electricians, Engineers)',
+      'Steel & Copper Supply',
+      'Land / Site Permits',
+      'Utility Interconnection Agreements',
+    ],
   }
   
   // Check project name for specific clues
@@ -134,6 +140,22 @@ const getPolicyColor = (policyId: TrumpPolicyAlignment): string => {
     case 'nuclear-restart': return '#06b6d4' // Cyan - nuclear
     default: return COLORS.textMuted
   }
+}
+
+// Format procurement stage for display
+const formatProcurementStage = (stage?: Opportunity['procurementStage']): string => {
+  if (!stage) return 'Unknown'
+  const labels: Record<string, string> = {
+    'monitoring': 'Monitoring',
+    'pre-rfp': 'Pre-RFP',
+    'rfp-open': 'RFP Open',
+    'proposal-submitted': 'Proposal Submitted',
+    'evaluation': 'Under Evaluation',
+    'awarded': 'Awarded',
+    'lost': 'Lost',
+    'construction': 'In Construction',
+  }
+  return labels[stage] || stage
 }
 
 // Filter opportunities by policy
@@ -333,11 +355,20 @@ export default function RadarPage() {
       <nav style={styles.nav}>
         <div style={styles.navBrand}>
           <div style={styles.brandIcon}>⚡</div>
-          <span style={styles.brandText}>Build Clock</span>
+          <span style={styles.brandText}>OT Vantage</span>
         </div>
         <div style={styles.navLinks}>
           <Link href="/radar" style={{ ...styles.navLink, ...styles.navLinkActive }}>
             Radar
+          </Link>
+          <Link href="/agents" style={styles.navLink}>
+            Agents
+          </Link>
+          <Link href="/opportunities" style={styles.navLink}>
+            Pipeline
+          </Link>
+          <Link href="/map" style={styles.navLink}>
+            Map
           </Link>
           <Link href="/about" style={styles.navLink}>
             About
@@ -567,8 +598,8 @@ export default function RadarPage() {
 
         {/* Main Content */}
         <div style={styles.mainContent}>
-          {/* Detail Panel - shows at TOP when opportunity selected (shared across views) */}
-          {selectedOpp && (
+          {/* Detail Panel - shows at TOP when opportunity selected IN LIST VIEW ONLY */}
+          {selectedOpp && activeView === 'list' && (
             <div style={styles.detailPanel}>
               <button 
                 style={styles.detailClose}
@@ -600,6 +631,47 @@ export default function RadarPage() {
                       {getPolicyLabel(policyId)}
                     </span>
                   ))}
+                </div>
+              )}
+              {/* RFP / Procurement Status */}
+              {(selectedOpp.rfpStatus || selectedOpp.procurementStage) && (
+                <div style={styles.detailRfp}>
+                  <div style={styles.detailRfpLabel}>📋 Procurement Status</div>
+                  <div style={styles.detailRfpGrid}>
+                    <div style={styles.rfpItem}>
+                      <span style={styles.rfpLabel}>Stage:</span>
+                      <span style={styles.rfpValue}>{formatProcurementStage(selectedOpp.procurementStage)}</span>
+                    </div>
+                    {selectedOpp.rfpStatus && (
+                      <div style={styles.rfpItem}>
+                        <span style={styles.rfpLabel}>RFP:</span>
+                        <span style={{
+                          ...styles.rfpValue,
+                          color: selectedOpp.rfpStatus === 'open' ? '#22c55e' : 
+                                 selectedOpp.rfpStatus === 'expected' ? '#f59e0b' : COLORS.textMuted
+                        }}>
+                          {selectedOpp.rfpStatus.toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    {selectedOpp.rfpDueDate && (
+                      <div style={styles.rfpItem}>
+                        <span style={styles.rfpLabel}>Due:</span>
+                        <span style={styles.rfpValue}>{selectedOpp.rfpDueDate}</span>
+                      </div>
+                    )}
+                    {selectedOpp.expectedDecision && (
+                      <div style={styles.rfpItem}>
+                        <span style={styles.rfpLabel}>Decision:</span>
+                        <span style={styles.rfpValue}>{selectedOpp.expectedDecision}</span>
+                      </div>
+                    )}
+                    {selectedOpp.rfpUrl && (
+                      <a href={selectedOpp.rfpUrl} target="_blank" rel="noopener noreferrer" style={styles.rfpLink}>
+                        View RFP →
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
               {selectedOpp.civilizationalImpact && (
@@ -682,7 +754,7 @@ export default function RadarPage() {
               </div>
             </div>
           ) : (
-            /* TIMELINE VIEW */
+            /* TIMELINE VIEW - with inline detail expansion */
             <div style={styles.timelineView}>
               {timelineData.length === 0 ? (
                 <div style={styles.emptyTimeline}>No milestones scheduled</div>
@@ -692,20 +764,107 @@ export default function RadarPage() {
                     <div style={styles.timelineMonthHeader}>{monthYear}</div>
                     <div style={styles.timelineEvents}>
                       {opps.map((opp) => (
-                        <button 
-                          key={opp.id} 
-                          style={{...styles.timelineEvent, textAlign: 'left'}}
-                          onClick={() => setSelectedOpp(opp)}
-                        >
-                          <div style={styles.timelineEventDate}>
-                            {new Date(opp.nextMilestone!.date).getDate()}
-                          </div>
-                          <div style={styles.timelineEventContent}>
-                            <div style={styles.timelineEventCompany}>{opp.company}</div>
-                            <div style={styles.timelineEventMilestone}>{opp.nextMilestone?.label}</div>
-                            <div style={styles.timelineEventValue}>{formatCurrency(opp.investmentSize)}</div>
-                          </div>
-                        </button>
+                        <div key={opp.id}>
+                          <button 
+                            style={{
+                              ...styles.timelineEvent, 
+                              textAlign: 'left',
+                              ...(selectedOpp?.id === opp.id ? styles.timelineEventSelected : {}),
+                            }}
+                            onClick={() => setSelectedOpp(selectedOpp?.id === opp.id ? null : opp)}
+                          >
+                            <div style={styles.timelineEventDate}>
+                              {new Date(opp.nextMilestone!.date).getDate()}
+                            </div>
+                            <div style={styles.timelineEventContent}>
+                              <div style={styles.timelineEventCompany}>{opp.company}</div>
+                              <div style={styles.timelineEventMilestone}>{opp.nextMilestone?.label}</div>
+                              <div style={styles.timelineEventValue}>{formatCurrency(opp.investmentSize)}</div>
+                            </div>
+                            <div style={styles.timelineEventChevron}>
+                              {selectedOpp?.id === opp.id ? '▼' : '▶'}
+                            </div>
+                          </button>
+                          
+                          {/* INLINE DETAIL - expands below clicked item */}
+                          {selectedOpp?.id === opp.id && (
+                            <div style={styles.timelineInlineDetail}>
+                              <div style={styles.inlineDetailHeader}>
+                                <div style={styles.inlineDetailCompany}>{opp.company}</div>
+                                <div style={styles.inlineDetailValue}>{formatCurrency(opp.investmentSize)}</div>
+                              </div>
+                              <div style={styles.inlineDetailProject}>{opp.project}</div>
+                              <div style={styles.inlineDetailMeta}>
+                                <span>{opp.sector}</span>
+                                <span>•</span>
+                                <span>{opp.location.city ? `${opp.location.city}, ` : ''}{opp.location.state}</span>
+                              </div>
+                              
+                              {/* RFP / Procurement Status */}
+                              {(opp.rfpStatus || opp.procurementStage) && (
+                                <div style={styles.inlineDetailRfp}>
+                                  <div style={styles.inlineDetailRfpLabel}>📋 Procurement</div>
+                                  <div style={styles.inlineDetailRfpGrid}>
+                                    <span style={styles.rfpBadge}>
+                                      {formatProcurementStage(opp.procurementStage)}
+                                    </span>
+                                    {opp.rfpStatus && (
+                                      <span style={{
+                                        ...styles.rfpBadge,
+                                        backgroundColor: opp.rfpStatus === 'open' ? '#22c55e22' : 
+                                                        opp.rfpStatus === 'expected' ? '#f59e0b22' : COLORS.bg,
+                                        color: opp.rfpStatus === 'open' ? '#22c55e' : 
+                                               opp.rfpStatus === 'expected' ? '#f59e0b' : COLORS.textMuted,
+                                      }}>
+                                        RFP: {opp.rfpStatus.toUpperCase()}
+                                      </span>
+                                    )}
+                                    {opp.expectedDecision && (
+                                      <span style={styles.rfpBadge}>Decision: {opp.expectedDecision}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {opp.trumpPolicyAlignment && opp.trumpPolicyAlignment.length > 0 && (
+                                <div style={styles.inlineDetailPolicies}>
+                                  {opp.trumpPolicyAlignment.map((policyId, i) => (
+                                    <span 
+                                      key={i}
+                                      style={{
+                                        ...styles.inlineDetailPolicyBadge,
+                                        backgroundColor: getPolicyColor(policyId) + '22',
+                                        color: getPolicyColor(policyId),
+                                      }}
+                                    >
+                                      {getPolicyLabel(policyId)}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                              
+                              {opp.civilizationalImpact && (
+                                <div style={styles.inlineDetailImpact}>
+                                  <div style={styles.inlineDetailImpactLabel}>🌍 Civilizational Impact</div>
+                                  <div style={styles.inlineDetailImpactText}>{opp.civilizationalImpact}</div>
+                                </div>
+                              )}
+                              
+                              {opp.services && opp.services.length > 0 && (
+                                <div style={styles.inlineDetailServices}>
+                                  <div style={styles.inlineDetailServicesLabel}>Service Opportunities</div>
+                                  <div style={styles.inlineDetailServicesTags}>
+                                    {opp.services.map((service, i) => (
+                                      <span key={i} style={styles.inlineDetailServiceTag}>
+                                        {getServiceLabel(service)}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -1119,6 +1278,54 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '0.8125rem',
     fontWeight: 600,
   },
+  // RFP / Procurement Status Styles
+  detailRfp: {
+    padding: '1rem',
+    backgroundColor: COLORS.bg,
+    borderRadius: '8px',
+    marginBottom: '1rem',
+    border: `1px solid ${COLORS.border}`,
+  },
+  detailRfpLabel: {
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    color: COLORS.textMuted,
+    marginBottom: '0.75rem',
+  },
+  detailRfpGrid: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '1rem',
+    alignItems: 'center',
+  },
+  rfpItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+  },
+  rfpLabel: {
+    fontSize: '0.75rem',
+    color: COLORS.textMuted,
+  },
+  rfpValue: {
+    fontSize: '0.875rem',
+    fontWeight: 600,
+    color: COLORS.text,
+  },
+  rfpLink: {
+    fontSize: '0.8125rem',
+    color: COLORS.accent,
+    textDecoration: 'none',
+    fontWeight: 600,
+    marginLeft: 'auto',
+  },
+  rfpBadge: {
+    padding: '0.25rem 0.5rem',
+    backgroundColor: COLORS.bg,
+    borderRadius: '4px',
+    fontSize: '0.75rem',
+    color: COLORS.textMuted,
+  },
   detailImpact: {
     padding: '1rem',
     backgroundColor: COLORS.bg,
@@ -1245,6 +1452,125 @@ const styles: Record<string, React.CSSProperties> = {
     color: COLORS.accent,
     fontFamily: "'JetBrains Mono', monospace",
     marginTop: '0.25rem',
+  },
+  timelineEventSelected: {
+    borderColor: COLORS.accent,
+    backgroundColor: COLORS.accent + '11',
+  },
+  timelineEventChevron: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '0.75rem',
+    color: COLORS.textMuted,
+    transition: 'transform 0.2s',
+  },
+  
+  // Timeline Inline Detail (expands below clicked item)
+  timelineInlineDetail: {
+    marginTop: '0.5rem',
+    marginLeft: '56px', // Align with content (date box width + gap)
+    padding: '1rem',
+    backgroundColor: COLORS.bgCard,
+    border: `1px solid ${COLORS.accent}`,
+    borderRadius: '8px',
+    marginBottom: '0.5rem',
+  },
+  inlineDetailHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: '0.5rem',
+  },
+  inlineDetailCompany: {
+    fontSize: '1.125rem',
+    fontWeight: 700,
+    color: COLORS.text,
+  },
+  inlineDetailValue: {
+    fontSize: '1.125rem',
+    fontWeight: 700,
+    color: COLORS.accent,
+    fontFamily: "'JetBrains Mono', monospace",
+  },
+  inlineDetailProject: {
+    fontSize: '0.9375rem',
+    color: COLORS.textMuted,
+    marginBottom: '0.5rem',
+  },
+  inlineDetailMeta: {
+    display: 'flex',
+    gap: '0.5rem',
+    fontSize: '0.8125rem',
+    color: COLORS.textMuted,
+    marginBottom: '0.75rem',
+  },
+  inlineDetailRfp: {
+    padding: '0.75rem',
+    backgroundColor: COLORS.bg,
+    borderRadius: '6px',
+    marginBottom: '0.75rem',
+  },
+  inlineDetailRfpLabel: {
+    fontSize: '0.6875rem',
+    fontWeight: 600,
+    color: COLORS.textMuted,
+    marginBottom: '0.5rem',
+  },
+  inlineDetailRfpGrid: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
+  },
+  inlineDetailPolicies: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
+    marginBottom: '0.75rem',
+  },
+  inlineDetailPolicyBadge: {
+    padding: '0.2rem 0.5rem',
+    borderRadius: '4px',
+    fontSize: '0.6875rem',
+    fontWeight: 600,
+  },
+  inlineDetailImpact: {
+    padding: '0.75rem',
+    backgroundColor: COLORS.bg,
+    borderRadius: '6px',
+    marginBottom: '0.75rem',
+  },
+  inlineDetailImpactLabel: {
+    fontSize: '0.6875rem',
+    fontWeight: 600,
+    color: COLORS.textMuted,
+    marginBottom: '0.25rem',
+  },
+  inlineDetailImpactText: {
+    fontSize: '0.8125rem',
+    color: COLORS.text,
+    lineHeight: 1.4,
+  },
+  inlineDetailServices: {
+    marginTop: '0.5rem',
+  },
+  inlineDetailServicesLabel: {
+    fontSize: '0.6875rem',
+    fontWeight: 600,
+    color: COLORS.textMuted,
+    marginBottom: '0.5rem',
+  },
+  inlineDetailServicesTags: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.375rem',
+  },
+  inlineDetailServiceTag: {
+    padding: '0.2rem 0.5rem',
+    backgroundColor: COLORS.bg,
+    borderRadius: '4px',
+    fontSize: '0.6875rem',
+    color: COLORS.text,
   },
 
   filters: {

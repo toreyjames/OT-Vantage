@@ -9,12 +9,12 @@
 
 ### Video Overview
 
-A 3-5 minute executive briefing video that introduces Build Clock's purpose: tracking $800B+ in industrial investment to identify new opportunities in the build economy, with a focus on why AI/automation are strategic necessities for competitive advantage.
+A 3-5 minute executive briefing video that introduces OT Vantage's purpose: tracking $800B+ in industrial investment to identify new opportunities in the build economy, with a focus on why AI/automation are strategic necessities for competitive advantage.
 
 ### Key Messages
 
 **Opening (0:00-0:45): Tracking Investment for Opportunities**
-- Build Clock monitors **$800B+ in announced industrial projects** across critical sectors
+- OT Vantage monitors **$800B+ in announced industrial projects** across critical sectors
 - Purpose: Identify new opportunities in semiconductors, batteries, rare earths, nuclear, and grid infrastructure
 - Every tracked project represents potential OT implementation opportunities
 
@@ -38,13 +38,13 @@ A 3-5 minute executive briefing video that introduces Build Clock's purpose: tra
 - Target sectors: rare earths, semiconductors, batteries, nuclear, grid infrastructure
 
 **Closing (4:30-5:00): The Strategic Imperative**
-- Build Clock tracks investment to surface opportunities where AI/automation + OT security are critical
+- OT Vantage tracks investment to surface opportunities where AI/automation + OT security are critical
 - **AI/automation is not optional** — it is the only path to competitive advantage in the build economy
 - Deloitte enables these opportunities through Industrial AI Security services
 
 ### Visual Elements
 
-- **Opening:** Animated Build Clock visualization showing $800B+ in investments
+- **Opening:** Animated OT Vantage visualization showing $800B+ in investments
 - **Challenge:** Side-by-side comparison of labor costs (China vs. U.S.) with visual emphasis on the 3-5x gap
 - **Solution:** Animated process flows showing AI optimization (before/after productivity gains)
 - **Opportunity:** Deloitte logo and service offering graphics
@@ -70,7 +70,7 @@ A 3-5 minute executive briefing video that introduces Build Clock's purpose: tra
 
 ## Executive Summary
 
-The Build Clock reveals **$800B+ in industrial investment**, but many projects depend on **prerequisites** that don't exist in the U.S. — rare earth refining, battery materials processing, HALEU fuel production, transmission infrastructure.
+The OT Vantage reveals **$800B+ in industrial investment**, but many projects depend on **prerequisites** that don't exist in the U.S. — rare earth refining, battery materials processing, HALEU fuel production, transmission infrastructure.
 
 **The challenge:** China and other countries have **cheap, skilled labor** that enables these prerequisites. The U.S. does not.
 
@@ -642,7 +642,7 @@ With AI/automation:
 
 ## Conclusion
 
-The Build Clock reveals **$800B+ in industrial investment**, but many projects depend on **prerequisites** that don't exist in the U.S.
+The OT Vantage reveals **$800B+ in industrial investment**, but many projects depend on **prerequisites** that don't exist in the U.S.
 
 **The challenge:** China and other countries have **cheap, skilled labor** that enables these prerequisites. The U.S. does not.
 

@@ -345,3 +345,130 @@ export function getStoreStats(): StoreStats {
   }
 }
 
+// ============================================================================
+// AGENT INSIGHTS STORE
+// ============================================================================
+
+const AGENT_INSIGHTS_FILE = path.join(DATA_DIR, 'agent-insights.json')
+const AGENT_ALERTS_FILE = path.join(DATA_DIR, 'agent-alerts.json')
+
+export interface StoredAgentInsight {
+  id: string
+  agentId: string
+  agentType: 'strategic' | 'sector' | 'capability'
+  insightType: string
+  title: string
+  summary: string
+  confidence: number
+  priority: 'critical' | 'high' | 'medium' | 'low'
+  impactScore: number
+  relevantSectors: string[]
+  relevantCapabilities: string[]
+  suggestedActions: { action: string; urgency: string; rationale: string }[]
+  sources: { url: string; title: string }[]
+  discoveredAt: Date
+  status: 'new' | 'reviewed' | 'actioned' | 'dismissed' | 'expired'
+  investmentData?: {
+    amount?: number
+    investmentType?: string
+    recipient?: string
+  }
+  whiteSpaceData?: {
+    competitorPresence?: string
+    windowOfOpportunity?: string
+  }
+}
+
+export interface StoredAgentAlert {
+  id: string
+  insightId: string
+  type: string
+  title: string
+  message: string
+  priority: 'critical' | 'high' | 'medium' | 'low'
+  createdAt: Date
+  acknowledged: boolean
+  acknowledgedAt?: Date
+}
+
+// Load agent insights from file
+export function loadAgentInsights(): StoredAgentInsight[] {
+  ensureDataDir()
+  
+  if (!fs.existsSync(AGENT_INSIGHTS_FILE)) {
+    return []
+  }
+  
+  try {
+    const data = fs.readFileSync(AGENT_INSIGHTS_FILE, 'utf-8')
+    return JSON.parse(data)
+  } catch (error) {
+    console.error('Failed to load agent insights:', error)
+    return []
+  }
+}
+
+// Save agent insights to file
+export function saveAgentInsights(insights: StoredAgentInsight[]): void {
+  ensureDataDir()
+  fs.writeFileSync(AGENT_INSIGHTS_FILE, JSON.stringify(insights, null, 2))
+}// Load agent alerts from file
+export function loadAgentAlerts(): StoredAgentAlert[] {
+  ensureDataDir()
+  
+  if (!fs.existsSync(AGENT_ALERTS_FILE)) {
+    return []
+  }
+  
+  try {
+    const data = fs.readFileSync(AGENT_ALERTS_FILE, 'utf-8')
+    return JSON.parse(data)
+  } catch (error) {
+    console.error('Failed to load agent alerts:', error)
+    return []
+  }
+}
+
+// Save agent alerts to file
+export function saveAgentAlerts(alerts: StoredAgentAlert[]): void {
+  ensureDataDir()
+  fs.writeFileSync(AGENT_ALERTS_FILE, JSON.stringify(alerts, null, 2))
+}
+
+// Get agent system stats
+export interface AgentStoreStats {
+  totalInsights: number
+  criticalInsights: number
+  highPriorityInsights: number
+  whiteSpaceCount: number
+  investmentCount: number
+  actionCount: number
+  unacknowledgedAlerts: number
+  lastAgentRun: Date | null
+}export function getAgentStoreStats(): AgentStoreStats {
+  const insights = loadAgentInsights()
+  const alerts = loadAgentAlerts()
+  
+  return {
+    totalInsights: insights.length,
+    criticalInsights: insights.filter(i => i.priority === 'critical').length,
+    highPriorityInsights: insights.filter(i => i.priority === 'high').length,
+    whiteSpaceCount: insights.filter(i => i.insightType === 'white-space').length,
+    investmentCount: insights.filter(i => i.insightType === 'investment').length,
+    actionCount: insights.filter(i => i.insightType === 'action').length,
+    unacknowledgedAlerts: alerts.filter(a => !a.acknowledged).length,
+    lastAgentRun: insights.length > 0 
+      ? new Date(Math.max(...insights.map(i => new Date(i.discoveredAt).getTime())))
+      : null,
+  }
+}
+
+// Combined stats including agents
+export interface CombinedStoreStats extends StoreStats {
+  agent: AgentStoreStats
+}export function getCombinedStoreStats(): CombinedStoreStats {
+  return {
+    ...getStoreStats(),
+    agent: getAgentStoreStats(),
+  }
+}

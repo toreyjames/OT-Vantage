@@ -5,7 +5,7 @@
 
 ## Executive Summary
 
-The Build Clock reveals **$800B+ in industrial investment** creating thousands of new OT environments. Deloitte has strong capabilities in strategy, ERP, supply chain, and workforce — but there are **specific niches** where we're either not playing or not differentiated.
+The OT Vantage reveals **$800B+ in industrial investment** creating thousands of new OT environments. Deloitte has strong capabilities in strategy, ERP, supply chain, and workforce — but there are **specific niches** where we're either not playing or not differentiated.
 
 This analysis identifies **5 niche opportunities** where Deloitte can establish unique positioning:
 1. **OT Asset Canonization** (Assurance Twin is unique)
@@ -74,7 +74,7 @@ Based on opportunity tracking, Deloitte's current service offerings include:
 - Differentiator: Only provider with canonization capability
 
 **Target clients:**
-- New builds in Build Clock pipeline (semiconductors, batteries, nuclear, grid)
+- New builds in OT Vantage pipeline (semiconductors, batteries, nuclear, grid)
 - Legacy facilities doing OT security assessments
 - Organizations preparing for insurance underwriting
 
@@ -106,7 +106,7 @@ Get into projects at the **design/construction phase**, not post-commissioning.
 - Commissioning security validation (before go-live)
 - Day 1 operational security (monitoring, access controls, IR readiness)
 
-**The Build Clock connection:**
+**The OT Vantage connection:**
 - $800B+ in new plants entering design/construction
 - Each one needs OT security — but most aren't thinking about it until too late
 - First-mover advantage: Get in at design phase, own the relationship
@@ -156,7 +156,7 @@ Get into projects at the **design/construction phase**, not post-commissioning.
 - AI incident response (what happens when AI makes wrong decision?)
 - AI governance for OT (policies, procedures, oversight)
 
-**The Build Clock connection:**
+**The OT Vantage connection:**
 - Every new plant is being built with more AI than legacy facilities
 - Predictive maintenance, autonomous operations, process optimization
 - AI security is not optional — it's a gating function for safe operations
@@ -209,7 +209,7 @@ Manage OT security **during construction**, not after.
 - Security validation at each construction milestone
 - Vendor security audits (are they following requirements?)
 
-**The Build Clock connection:**
+**The OT Vantage connection:**
 - Every new plant has 10-20 vendors during construction
 - Each vendor is a potential attack vector
 - Security gaps introduced during construction are hard to fix later
@@ -242,7 +242,7 @@ Manage OT security **during construction**, not after.
 
 **But we're missing:** **Market intelligence** that connects policy → pipeline → services.
 
-**The Build Clock reveals:**
+**The OT Vantage reveals:**
 - $800B+ in announced investments
 - Specific projects, timelines, procurement stages
 - Service needs (OT security, supply chain, workforce, etc.)
@@ -262,7 +262,7 @@ Manage OT security **during construction**, not after.
 - Procurement intelligence (when are decisions happening?)
 - Service demand mapping (what capabilities are needed?)
 
-**The Build Clock connection:**
+**The OT Vantage connection:**
 - We built it for ourselves (to understand the market)
 - But it's not productized as a client-facing offering
 - Could be a differentiator: "We understand the build cycle better than anyone"
@@ -344,7 +344,7 @@ ONGOING ENGAGEMENT
 ### Why competitors can't easily replicate
 
 1. **Assurance Twin** — We built it; it's proprietary
-2. **Build Clock** — We built it; it's our market intelligence
+2. **OT Vantage** — We built it; it's our market intelligence
 3. **Integration** — We can connect across practices (Cyber, Strategy, Operations, Tax)
 4. **Relationships** — We have relationships with owners, EPCs, vendors
 5. **Timing** — We're early; market is just forming
@@ -360,7 +360,7 @@ ONGOING ENGAGEMENT
    - Create delivery methodology
    - Build eminence around it
 
-2. **Build Clock** → "Build Cycle Intelligence Briefings"
+2. **OT Vantage** → "Build Cycle Intelligence Briefings"
    - Quarterly briefings for clients
    - Sector deep-dives
    - Procurement intelligence
@@ -406,7 +406,7 @@ ONGOING ENGAGEMENT
 
 ## Conclusion
 
-The Build Clock reveals **$800B+ in industrial investment** creating thousands of new OT environments. Deloitte has strong capabilities, but there are **specific niches** where we're not playing — or not differentiated.
+The OT Vantage reveals **$800B+ in industrial investment** creating thousands of new OT environments. Deloitte has strong capabilities, but there are **specific niches** where we're not playing — or not differentiated.
 
 **The 5 niches identified:**
 1. OT Asset Canonization (we have it, need to productize)
@@ -419,7 +419,7 @@ The Build Clock reveals **$800B+ in industrial investment** creating thousands o
 
 **The question:** Do we want to own these niches, or watch competitors build them?
 
-**The answer:** We have the foundation (Assurance Twin, Build Clock). We need to productize, market, and scale.
+**The answer:** We have the foundation (Assurance Twin, OT Vantage). We need to productize, market, and scale.
 
 ---
 
@@ -431,6 +431,7 @@ The Build Clock reveals **$800B+ in industrial investment** creating thousands o
 5. Build Industrial AI Security capability
 
 **Timeline:** 12-24 months to establish market leadership in these niches.
+
 
 
 

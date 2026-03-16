@@ -196,7 +196,7 @@ The COVID-19 pandemic accelerated remote operations. Many industrial facilities 
 
 ## The Build Cycle Amplifies This Risk
 
-Every new plant in the Build Clock pipeline is being built with:
+Every new plant in the OT Vantage pipeline is being built with:
 - **More connectivity** than legacy facilities (remote operations, cloud integration, vendor access)
 - **More AI** than legacy facilities (predictive maintenance, autonomous operations, process optimization)
 - **More vendors** than legacy facilities (EPCs, integrators, equipment suppliers, software providers, AI model providers)
@@ -263,7 +263,7 @@ The real-world attacks above demonstrate that OT cyber risk is not theoretical. 
 
 OT cyber attacks are not theoretical. Stuxnet caused physical damage. Triton targeted safety systems. Ukraine's power grid was taken offline. Colonial Pipeline showed how IT attacks cascade into OT operations.
 
-As plants become smarter and more connected — with AI-driven optimization, remote operations, and cloud integration — the attack surface expands. Every new semiconductor fab, every battery plant, every nuclear facility in the Build Clock pipeline is being built with more connectivity and more AI than legacy facilities.
+As plants become smarter and more connected — with AI-driven optimization, remote operations, and cloud integration — the attack surface expands. Every new semiconductor fab, every battery plant, every nuclear facility in the OT Vantage pipeline is being built with more connectivity and more AI than legacy facilities.
 
 This is not a future risk. It is a present reality that will accelerate as the build cycle creates thousands of new OT environments.
 
@@ -286,6 +286,7 @@ The build cycle is here. The security requirement is clear. The question is whet
 5. FBI/DHS. "Colonial Pipeline Ransomware Attack Advisory." May 2021.
 6. CISA. "Oldsmar Water Treatment Facility Cyber Attack." February 2021.
 7. U.S. Department of Defense. "Joint Guidance: Principles for the Secure Integration of AI in OT." December 2024.
+
 
 
 

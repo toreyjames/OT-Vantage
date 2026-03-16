@@ -7,7 +7,7 @@ export default function Home() {
   const router = useRouter()
   
   useEffect(() => {
-    router.replace('/radar')
+    router.replace('/agents')
   }, [router])
 
   return (
@@ -19,7 +19,7 @@ export default function Home() {
       justifyContent: 'center',
       color: '#737373',
     }}>
-      Redirecting to Radar...
+      Redirecting to OT Vantage...
     </div>
   )
 }

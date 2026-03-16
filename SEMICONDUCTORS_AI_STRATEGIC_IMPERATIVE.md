@@ -215,7 +215,7 @@ WORKFORCE + PERMITTING + OT/CYBER ───────────────�
 
 [1] 1:1 Production Ratio Requirement: Reuters, “US plans 1:1 chip production rule to curb overseas reliance, WSJ reports,” Sep 26, 2025; U.S. Dept. of Commerce policy announcements.
 
-[2] Pax Silica: `paxsilica.org` (initiative site) + referenced in `SEMICONDUCTOR_POLICY_ANALYSIS.md` (Build Clock synthesis).
+[2] Pax Silica: `paxsilica.org` (initiative site) + referenced in `SEMICONDUCTOR_POLICY_ANALYSIS.md` (OT Vantage synthesis).
 
 [3] 100% Tariff Threat: Associated Press, “Trump plans 100% tariff on computer chips, unless companies build in US,” Aug 6, 2025 (referenced in `SEMICONDUCTOR_POLICY_ANALYSIS.md`).
 
