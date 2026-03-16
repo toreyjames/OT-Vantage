@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { opportunities, type Opportunity } from '../../lib/data/opportunities'
+import type { OTRadarSignal } from '../../lib/types/ot-radar-signal'
 
 // ============================================================================
 // COLORS & THEME (matching OT Vantage)
@@ -171,8 +172,28 @@ export default function OpportunitiesPage() {
   const [selectedSector, setSelectedSector] = useState<string>('all');
   const [includeSoon, setIncludeSoon] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [radarSignals, setRadarSignals] = useState<OTRadarSignal[]>([]);
+  const [radarStatus, setRadarStatus] = useState<string>('loading');
 
-  // Read sector from URL params on mount
+  const fetchRadar = useCallback(async () => {
+    try {
+      const res = await fetch('/api/radar/signals?limit=50')
+      const data = await res.json()
+      if (data.success) {
+        setRadarSignals(data.signals || [])
+        setRadarStatus(data.radarStatus || 'unknown')
+      }
+    } catch {
+      setRadarStatus('error')
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchRadar()
+    const interval = setInterval(fetchRadar, 5 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [fetchRadar])
+
   useEffect(() => {
     const sectorParam = searchParams.get('sector')
     if (sectorParam) {
@@ -247,6 +268,60 @@ export default function OpportunitiesPage() {
           </div>
         </header>
         
+        {/* OT Radar Feed */}
+        {(radarSignals.length > 0 || radarStatus === 'connected') && (
+          <div style={{
+            margin: '0 0 1.5rem',
+            padding: '0.75rem 1.25rem',
+            backgroundColor: '#0d1117',
+            border: '1px solid #58a6ff33',
+            borderRadius: '10px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            overflow: 'hidden',
+          }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: '0.5rem',
+              fontSize: '0.8125rem', fontWeight: 600, color: '#58a6ff', flexShrink: 0,
+            }}>
+              <span>📡</span> OT Radar
+              <span style={{
+                padding: '1px 6px', borderRadius: '4px', fontSize: '0.625rem',
+                backgroundColor: 'rgba(88,166,255,0.15)', color: '#58a6ff',
+              }}>
+                {radarStatus === 'connected' ? 'LIVE' : radarStatus.toUpperCase()}
+              </span>
+            </div>
+            {radarSignals.length > 0 ? (
+              <div style={{ display: 'flex', gap: '1rem', overflow: 'auto', flex: 1 }}>
+                {radarSignals.slice(0, 5).map((s, i) => (
+                  <a
+                    key={s.id || i}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      flexShrink: 0, padding: '0.375rem 0.75rem',
+                      backgroundColor: '#161b22', borderRadius: '6px',
+                      fontSize: '0.75rem', color: '#e6edf3', textDecoration: 'none',
+                      border: '1px solid #21262d', maxWidth: '280px',
+                      whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                    }}
+                  >
+                    <span style={{color: '#58a6ff', fontWeight: 600}}>{s.entity}</span>{' '}
+                    <span style={{color: '#7d8590'}}>{s.signalType?.replace(/-/g, ' ')}</span>
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <span style={{ fontSize: '0.75rem', color: '#7d8590' }}>
+                Connected — awaiting signals from SAM.gov, SEC, EPA, FPDS...
+              </span>
+            )}
+          </div>
+        )}
+
         <div style={styles.narrativeContext}>
           <div style={styles.narrativeBox}>
             <span style={styles.narrativeLabel}>THE CONNECTION</span>

@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server'
 import { checkPolicyFeeds } from '@/lib/services/policy-monitor'
 import { discoverOpportunities, getDiscoveryStats } from '@/lib/services/opportunity-discovery'
 import { generateInsights } from '@/lib/services/ai-classifier'
+import { fetchRadarSignals, isRadarAvailable } from '@/lib/services/radar-client'
 import { SystemStatus } from '@/lib/services/types'
 
 export const dynamic = 'force-dynamic'
@@ -24,15 +25,30 @@ export async function GET(request: Request) {
     
     let policyUpdates: any[] = []
     let opportunitySignals: any[] = []
+    let radarSignals: any[] = []
+    let radarStatus = 'unknown'
     
-    // Fetch based on type
+    const fetches: Promise<void>[] = []
+
     if (type === 'all' || type === 'policy') {
-      policyUpdates = await checkPolicyFeeds()
+      fetches.push(checkPolicyFeeds().then(r => { policyUpdates = r }))
     }
-    
     if (type === 'all' || type === 'opportunities') {
-      opportunitySignals = await discoverOpportunities()
+      fetches.push(discoverOpportunities().then(r => { opportunitySignals = r }))
     }
+    if (type === 'all' || type === 'radar') {
+      fetches.push(
+        Promise.all([
+          fetchRadarSignals({ limit: 50 }),
+          isRadarAvailable(),
+        ]).then(([signals, available]) => {
+          radarSignals = signals
+          radarStatus = available ? 'connected' : 'unavailable'
+        }).catch(() => { radarStatus = 'error' })
+      )
+    }
+
+    await Promise.all(fetches)
     
     // On Vercel, skip file persistence - just return the live data
     let savedSignals = 0
@@ -88,9 +104,10 @@ export async function GET(request: Request) {
       data: {
         policyUpdates: policyUpdates.slice(0, 50),
         opportunitySignals: opportunitySignals.slice(0, 50),
-        // NEW: Separate feeds for discoveries vs known companies
         newDiscoveries: newDiscoveries.slice(0, 25),
         knownCompanyNews: knownCompanyNews.slice(0, 25),
+        radarSignals,
+        radarStatus,
         insights,
         status,
         store: {
@@ -98,7 +115,6 @@ export async function GET(request: Request) {
           savedUpdates,
           stats: storeStats,
         },
-        // SMART DISCOVERY TRACKING INFO
         tracking: {
           companiesTracked: discoveryStats.trackedCompanies,
           activeQueries: discoveryStats.activeQueries,

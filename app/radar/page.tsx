@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { opportunities, TRUMP_POLICIES, type Opportunity, type TrumpPolicyAlignment } from '../../lib/data/opportunities'
 import type { PolicyUpdate, OpportunitySignal } from '../../lib/services/types'
+import type { OTRadarSignal } from '../../lib/types/ot-radar-signal'
 
 // ============================================================================
 // COLORS & THEME
@@ -204,6 +205,8 @@ export default function RadarPage() {
   const [liveUpdates, setLiveUpdates] = useState<{
     policyUpdates: PolicyUpdate[]
     opportunitySignals: OpportunitySignal[]
+    radarSignals: OTRadarSignal[]
+    radarStatus: string
     lastSync: Date | null
     loading: boolean
     pendingCount: number
@@ -211,6 +214,8 @@ export default function RadarPage() {
   }>({
     policyUpdates: [],
     opportunitySignals: [],
+    radarSignals: [],
+    radarStatus: 'unknown',
     lastSync: null,
     loading: true,
     pendingCount: 0,
@@ -228,6 +233,8 @@ export default function RadarPage() {
         setLiveUpdates({
           policyUpdates: data.data.policyUpdates?.slice(0, 5) || [],
           opportunitySignals: data.data.opportunitySignals?.slice(0, 5) || [],
+          radarSignals: data.data.radarSignals || [],
+          radarStatus: data.data.radarStatus || 'unknown',
           lastSync: new Date(),
           loading: false,
           pendingCount: data.data.store?.stats?.pendingSignals || 0,
@@ -410,6 +417,10 @@ export default function RadarPage() {
               <span style={styles.liveStat}>
                 <strong>{liveUpdates.opportunitySignals.length}</strong> new signals
               </span>
+              <span style={{...styles.liveStat, color: liveUpdates.radarStatus === 'connected' ? COLORS.blue : COLORS.textMuted}}>
+                <strong>{liveUpdates.radarSignals.length}</strong> radar signals
+                {liveUpdates.radarStatus === 'connected' && ' ●'}
+              </span>
               {liveUpdates.savedSignals > 0 && (
                 <span style={{...styles.liveStat, color: COLORS.accent}}>
                   +{liveUpdates.savedSignals} saved
@@ -530,6 +541,82 @@ export default function RadarPage() {
                         </button>
                       </div>
                     </div>
+                  ))
+                )}
+              </div>
+
+              {/* OT Radar Signals */}
+              <div style={styles.liveColumn}>
+                <div style={styles.liveColumnTitle}>
+                  📡 OT Radar
+                  <span style={{
+                    marginLeft: '8px',
+                    fontSize: '9px',
+                    padding: '1px 6px',
+                    borderRadius: '4px',
+                    backgroundColor: liveUpdates.radarStatus === 'connected' ? 'rgba(88, 166, 255, 0.2)' : 'rgba(125, 133, 144, 0.2)',
+                    color: liveUpdates.radarStatus === 'connected' ? COLORS.blue : COLORS.textMuted,
+                  }}>
+                    {liveUpdates.radarStatus === 'connected' ? 'LIVE' : liveUpdates.radarStatus.toUpperCase()}
+                  </span>
+                </div>
+                {liveUpdates.radarSignals.length === 0 ? (
+                  <div style={styles.liveEmpty}>
+                    {liveUpdates.radarStatus === 'connected' 
+                      ? 'Radar connected — awaiting signals' 
+                      : liveUpdates.radarStatus === 'unavailable'
+                        ? 'Radar service unavailable'
+                        : 'Connecting to OT Radar...'}
+                  </div>
+                ) : (
+                  liveUpdates.radarSignals.slice(0, 5).map((signal: OTRadarSignal, i) => (
+                    <a 
+                      key={signal.id || i} 
+                      href={signal.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{...styles.liveItem, textDecoration: 'none', cursor: 'pointer'}}
+                    >
+                      <div style={styles.liveItemTitle}>
+                        <span style={{color: COLORS.blue}}>{signal.entity}: </span>
+                        {signal.description?.slice(0, 70)}{(signal.description?.length || 0) > 70 ? '...' : ''}
+                      </div>
+                      <div style={styles.liveItemMeta}>
+                        <span>{signal.source}</span>
+                        <span style={{textTransform: 'capitalize'}}>{signal.sector}</span>
+                        <span style={{color: COLORS.blue}}>
+                          {Math.round((signal.otRelevanceScore || 0) * 100)}% OT
+                        </span>
+                      </div>
+                      {signal.location && (
+                        <div style={{fontSize: '10px', color: 'rgba(255,255,255,0.5)', marginTop: '2px'}}>
+                          📍 {signal.location}
+                        </div>
+                      )}
+                      <div style={{display: 'flex', gap: '4px', marginTop: '4px', flexWrap: 'wrap'}}>
+                        <span style={{
+                          fontSize: '9px',
+                          padding: '2px 6px',
+                          backgroundColor: 'rgba(88, 166, 255, 0.2)',
+                          color: COLORS.blue,
+                          borderRadius: '4px',
+                          textTransform: 'capitalize',
+                        }}>
+                          {signal.signalType?.replace(/-/g, ' ')}
+                        </span>
+                        {signal.otKeywords?.slice(0, 2).map((kw, j) => (
+                          <span key={j} style={{
+                            fontSize: '9px',
+                            padding: '2px 6px',
+                            backgroundColor: 'rgba(126, 231, 135, 0.15)',
+                            color: COLORS.accent,
+                            borderRadius: '4px',
+                          }}>
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    </a>
                   ))
                 )}
               </div>
@@ -1007,7 +1094,7 @@ const styles: Record<string, React.CSSProperties> = {
   },
   livePanelContent: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: '1fr 1fr 1fr',
     gap: '1rem',
     padding: '1rem 1.25rem',
     borderTop: `1px solid ${COLORS.border}`,

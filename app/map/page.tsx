@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import {
   ComposableMap,
@@ -10,6 +10,7 @@ import {
   ZoomableGroup,
 } from 'react-simple-maps'
 import { opportunities, SECTOR_MAPPING, type Opportunity } from '../../lib/data/opportunities'
+import type { OTRadarSignal } from '../../lib/types/ot-radar-signal'
 
 // US TopoJSON
 const geoUrl = 'https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json'
@@ -99,13 +100,85 @@ const COLORS = {
   accent: '#22d3ee',
 }
 
+const STATE_NAME_TO_CODE: Record<string, string> = {
+  'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
+  'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE',
+  'florida': 'FL', 'georgia': 'GA', 'hawaii': 'HI', 'idaho': 'ID',
+  'illinois': 'IL', 'indiana': 'IN', 'iowa': 'IA', 'kansas': 'KS',
+  'kentucky': 'KY', 'louisiana': 'LA', 'maine': 'ME', 'maryland': 'MD',
+  'massachusetts': 'MA', 'michigan': 'MI', 'minnesota': 'MN', 'mississippi': 'MS',
+  'missouri': 'MO', 'montana': 'MT', 'nebraska': 'NE', 'nevada': 'NV',
+  'new hampshire': 'NH', 'new jersey': 'NJ', 'new mexico': 'NM', 'new york': 'NY',
+  'north carolina': 'NC', 'north dakota': 'ND', 'ohio': 'OH', 'oklahoma': 'OK',
+  'oregon': 'OR', 'pennsylvania': 'PA', 'rhode island': 'RI', 'south carolina': 'SC',
+  'south dakota': 'SD', 'tennessee': 'TN', 'texas': 'TX', 'utah': 'UT',
+  'vermont': 'VT', 'virginia': 'VA', 'washington': 'WA', 'west virginia': 'WV',
+  'wisconsin': 'WI', 'wyoming': 'WY', 'district of columbia': 'DC',
+}
+
+function resolveStateCode(location: string | undefined): string | null {
+  if (!location) return null
+  const parts = location.split(',').map(p => p.trim())
+  for (const part of parts) {
+    const upper = part.toUpperCase()
+    if (STATE_COORDS[upper]) return upper
+    const lower = part.toLowerCase()
+    if (STATE_NAME_TO_CODE[lower]) return STATE_NAME_TO_CODE[lower]
+  }
+  return null
+}
+
+const RADAR_SECTOR_COLOR: Record<string, string> = {
+  defense: '#ef4444',
+  aerospace: '#f97316',
+  'life-sciences': '#a855f7',
+  pharma: '#d946ef',
+  nuclear: '#06b6d4',
+  semiconductor: '#8b5cf6',
+  'data-center': '#3b82f6',
+  energy: '#22c55e',
+  'critical-minerals': '#f59e0b',
+  'ev-battery': '#84cc16',
+  infrastructure: '#64748b',
+}
+
 export default function MapPage() {
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null)
   const [hoveredOpp, setHoveredOpp] = useState<Opportunity | null>(null)
+  const [selectedRadarSignal, setSelectedRadarSignal] = useState<OTRadarSignal | null>(null)
+  const [radarSignals, setRadarSignals] = useState<OTRadarSignal[]>([])
+  const [radarStatus, setRadarStatus] = useState<string>('loading')
   const [sectorFilter, setSectorFilter] = useState<string>('all')
   const [priorityFilter, setPriorityFilter] = useState<string>('all')
+  const [showRadarLayer, setShowRadarLayer] = useState(true)
   const [zoom, setZoom] = useState(1)
   const [center, setCenter] = useState<[number, number]>([-96, 38])
+
+  const fetchRadar = useCallback(async () => {
+    try {
+      const res = await fetch('/api/radar/signals?limit=100')
+      const data = await res.json()
+      if (data.success) {
+        setRadarSignals(data.signals || [])
+        setRadarStatus(data.radarStatus || 'unknown')
+      }
+    } catch {
+      setRadarStatus('error')
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchRadar()
+    const interval = setInterval(fetchRadar, 5 * 60 * 1000)
+    return () => clearInterval(interval)
+  }, [fetchRadar])
+
+  const mappableRadarSignals = useMemo(() => {
+    if (!showRadarLayer) return []
+    return radarSignals
+      .map(s => ({ signal: s, stateCode: resolveStateCode(s.location) }))
+      .filter((r): r is { signal: OTRadarSignal; stateCode: string } => r.stateCode !== null)
+  }, [radarSignals, showRadarLayer])
 
   // Filter opportunities
   const filteredOpps = useMemo(() => {
@@ -175,10 +248,25 @@ export default function MapPage() {
             🗺️ AI Manhattan Project — Geographic View
           </h1>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', alignItems: 'center' }}>
           <span style={{ color: COLORS.accent }}>{filteredOpps.length} Projects</span>
           <span style={{ color: '#22c55e' }}>{formatCurrency(totalInvestment)} Pipeline</span>
           <span style={{ color: '#f59e0b' }}>{totalJobs.toLocaleString()} Jobs</span>
+          <button
+            onClick={() => setShowRadarLayer(!showRadarLayer)}
+            style={{
+              padding: '0.375rem 0.75rem',
+              backgroundColor: showRadarLayer ? 'rgba(88,166,255,0.15)' : 'transparent',
+              border: `1px solid ${showRadarLayer ? '#58a6ff' : COLORS.border}`,
+              borderRadius: '6px',
+              color: showRadarLayer ? '#58a6ff' : COLORS.textMuted,
+              fontSize: '0.75rem',
+              cursor: 'pointer',
+              fontWeight: 500,
+            }}
+          >
+            📡 Radar {radarStatus === 'connected' ? `(${mappableRadarSignals.length})` : `(${radarStatus})`}
+          </button>
         </div>
       </header>
 
@@ -309,7 +397,7 @@ export default function MapPage() {
                   <Marker
                     key={opp.id}
                     coordinates={coords}
-                    onClick={() => setSelectedOpp(isSelected ? null : opp)}
+                    onClick={() => { setSelectedRadarSignal(null); setSelectedOpp(isSelected ? null : opp) }}
                     onMouseEnter={() => setHoveredOpp(opp)}
                     onMouseLeave={() => setHoveredOpp(null)}
                     style={{ cursor: 'pointer' }}
@@ -347,6 +435,39 @@ export default function MapPage() {
                         {formatCurrency(opp.investmentSize)}
                       </text>
                     )}
+                  </Marker>
+                )
+              })}
+              {/* Radar Signal Markers */}
+              {mappableRadarSignals.map(({ signal, stateCode }, idx) => {
+                const baseCoords = STATE_COORDS[stateCode]
+                if (!baseCoords) return null
+                const angle = ((idx + filteredOpps.length) * 137.5) * (Math.PI / 180)
+                const radius = 0.8
+                const coords: [number, number] = [
+                  baseCoords[0] + Math.cos(angle) * radius,
+                  baseCoords[1] + Math.sin(angle) * radius,
+                ]
+                const isSelected = selectedRadarSignal?.id === signal.id
+                const color = RADAR_SECTOR_COLOR[signal.sector] || '#58a6ff'
+
+                return (
+                  <Marker
+                    key={`radar-${signal.id || idx}`}
+                    coordinates={coords}
+                    onClick={() => {
+                      setSelectedOpp(null)
+                      setSelectedRadarSignal(isSelected ? null : signal)
+                    }}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <polygon
+                      points="0,-8 6,4 -6,4"
+                      fill={color}
+                      stroke={isSelected ? '#fff' : 'rgba(255,255,255,0.4)'}
+                      strokeWidth={isSelected ? 2 : 0.5}
+                      opacity={isSelected ? 1 : 0.8}
+                    />
                   </Marker>
                 )
               })}
@@ -446,7 +567,107 @@ export default function MapPage() {
           )}
         </div>
 
-        {/* Detail panel */}
+        {/* Radar Signal Detail Panel */}
+        {selectedRadarSignal && !selectedOpp && (
+          <div style={{
+            width: '400px',
+            backgroundColor: COLORS.bgCard,
+            borderLeft: `1px solid ${COLORS.border}`,
+            padding: '1.5rem',
+            overflowY: 'auto',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+              <div>
+                <div style={{
+                  display: 'inline-block',
+                  padding: '0.25rem 0.5rem',
+                  backgroundColor: '#58a6ff22',
+                  borderRadius: '4px',
+                  fontSize: '0.75rem',
+                  color: '#58a6ff',
+                  marginBottom: '0.5rem',
+                }}>
+                  📡 OT Radar Signal
+                </div>
+                <h2 style={{ margin: 0, fontSize: '1.25rem' }}>{selectedRadarSignal.entity}</h2>
+              </div>
+              <button
+                onClick={() => setSelectedRadarSignal(null)}
+                style={{ background: 'none', border: 'none', color: COLORS.textMuted, cursor: 'pointer', fontSize: '1.5rem', padding: 0 }}
+              >
+                ×
+              </button>
+            </div>
+
+            <p style={{ margin: '0 0 1rem', fontSize: '0.875rem', lineHeight: 1.5, color: COLORS.text }}>
+              {selectedRadarSignal.description}
+            </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ padding: '1rem', backgroundColor: COLORS.bg, borderRadius: '8px' }}>
+                <div style={{ fontSize: '0.75rem', color: COLORS.textMuted }}>Source</div>
+                <div style={{ fontSize: '1rem', fontWeight: 600, textTransform: 'capitalize' }}>{selectedRadarSignal.source}</div>
+              </div>
+              <div style={{ padding: '1rem', backgroundColor: COLORS.bg, borderRadius: '8px' }}>
+                <div style={{ fontSize: '0.75rem', color: COLORS.textMuted }}>OT Relevance</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 600, color: '#58a6ff' }}>
+                  {Math.round((selectedRadarSignal.otRelevanceScore || 0) * 100)}%
+                </div>
+              </div>
+            </div>
+
+            {selectedRadarSignal.location && (
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '0.875rem', color: COLORS.textMuted, marginBottom: '0.5rem' }}>Location</h3>
+                <p style={{ margin: 0 }}>📍 {selectedRadarSignal.location}</p>
+              </div>
+            )}
+
+            <div style={{ marginBottom: '1.5rem' }}>
+              <h3 style={{ fontSize: '0.875rem', color: COLORS.textMuted, marginBottom: '0.5rem' }}>Signal Details</h3>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <span style={{ padding: '0.25rem 0.5rem', backgroundColor: COLORS.bg, borderRadius: '4px', fontSize: '0.75rem', color: COLORS.accent, textTransform: 'capitalize' }}>
+                  {selectedRadarSignal.signalType?.replace(/-/g, ' ')}
+                </span>
+                <span style={{ padding: '0.25rem 0.5rem', backgroundColor: COLORS.bg, borderRadius: '4px', fontSize: '0.75rem', color: COLORS.textMuted, textTransform: 'capitalize' }}>
+                  {selectedRadarSignal.sector}
+                </span>
+              </div>
+            </div>
+
+            {selectedRadarSignal.otKeywords && selectedRadarSignal.otKeywords.length > 0 && (
+              <div style={{ marginBottom: '1.5rem' }}>
+                <h3 style={{ fontSize: '0.875rem', color: COLORS.textMuted, marginBottom: '0.5rem' }}>OT Keywords</h3>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {selectedRadarSignal.otKeywords.map((kw, i) => (
+                    <span key={i} style={{
+                      padding: '0.25rem 0.5rem', backgroundColor: 'rgba(126, 231, 135, 0.1)',
+                      borderRadius: '4px', fontSize: '0.75rem', color: '#7ee787',
+                    }}>{kw}</span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {selectedRadarSignal.url && (
+              <a
+                href={selectedRadarSignal.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'block', padding: '0.75rem', textAlign: 'center',
+                  backgroundColor: '#58a6ff22', border: '1px solid #58a6ff44',
+                  borderRadius: '8px', color: '#58a6ff', textDecoration: 'none',
+                  fontSize: '0.875rem', fontWeight: 500,
+                }}
+              >
+                View Source →
+              </a>
+            )}
+          </div>
+        )}
+
+        {/* Opportunity Detail panel */}
         {selectedOpp && (
           <div style={{
             width: '400px',
