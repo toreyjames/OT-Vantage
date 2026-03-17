@@ -400,7 +400,7 @@ export default function MapPage() {
                     onClick={() => { setSelectedRadarSignal(null); setSelectedOpp(isSelected ? null : opp) }}
                     onMouseEnter={() => setHoveredOpp(opp)}
                     onMouseLeave={() => setHoveredOpp(null)}
-                    style={{ cursor: 'pointer' }}
+                    style={{ default: { cursor: 'pointer' }, hover: { cursor: 'pointer' }, pressed: { cursor: 'pointer' } }}
                   >
                     {/* Pulse animation for hot items */}
                     {opp.priority === 'hot' && (
@@ -459,7 +459,7 @@ export default function MapPage() {
                       setSelectedOpp(null)
                       setSelectedRadarSignal(isSelected ? null : signal)
                     }}
-                    style={{ cursor: 'pointer' }}
+                    style={{ default: { cursor: 'pointer' }, hover: { cursor: 'pointer' }, pressed: { cursor: 'pointer' } }}
                   >
                     <polygon
                       points="0,-8 6,4 -6,4"
