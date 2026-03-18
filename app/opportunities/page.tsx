@@ -50,7 +50,17 @@ const getSectorLabel = (sector: string) => ({
   'nuclear': 'Nuclear',
   'oil-gas': 'Oil & Gas',
   'critical-minerals': 'Critical Minerals',
-}[sector]);
+  'steel-metals': 'Steel & Metals',
+  'water-utilities': 'Water Utilities',
+  'chemicals': 'Chemicals',
+  'grid-infrastructure': 'Grid Infrastructure',
+  'food-beverage': 'Food & Beverage',
+  'pulp-paper': 'Pulp & Paper',
+  'building-materials': 'Building Materials',
+  'life-sciences': 'Life Sciences',
+  'aerospace': 'Aerospace',
+  'infrastructure': 'Infrastructure',
+}[sector] || sector.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
 
 const getStageLabel = (stage: string) => ({
   'monitoring': 'Monitoring',
@@ -60,7 +70,8 @@ const getStageLabel = (stage: string) => ({
   'evaluation': 'In Evaluation',
   'awarded': 'Won',
   'lost': 'Lost',
-}[stage]);
+  'construction': 'In Construction',
+}[stage] || stage.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()));
 
 const getStageColor = (stage: string) => ({
   'monitoring': COLORS.textMuted,
@@ -167,8 +178,8 @@ export default function OpportunitiesPage() {
   const [viewMode, setViewMode] = useState('cards');
   const [selectedStage, setSelectedStage] = useState('all');
   const [selectedPriority, setSelectedPriority] = useState('all');
-  const [selectedOt, setSelectedOt] = useState('core');
-  const [selectedHorizon, setSelectedHorizon] = useState('next');
+  const [selectedOt, setSelectedOt] = useState('all');
+  const [selectedHorizon, setSelectedHorizon] = useState('all');
   const [selectedSector, setSelectedSector] = useState<string>('all');
   const [includeSoon, setIncludeSoon] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -495,7 +506,7 @@ export default function OpportunitiesPage() {
                     {getStageLabel(opp.procurementStage)}
                   </span>
                   <span style={styles.tagMuted}>{getSectorLabel(opp.sector)}</span>
-                  <span style={styles.tagMuted}>{opp.location.city}, {opp.location.state}</span>
+                  <span style={styles.tagMuted}>{opp.location.city ? `${opp.location.city}, ` : ''}{opp.location.state}</span>
                   <span style={{ ...styles.tag, backgroundColor: getOtColor(inferOtRelevance(opp)) + '22', color: getOtColor(inferOtRelevance(opp)) }}>
                     {getOtLabel(inferOtRelevance(opp))}
                   </span>
