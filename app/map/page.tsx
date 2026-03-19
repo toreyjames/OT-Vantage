@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useMemo, useEffect, useCallback, Suspense } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import AppNav from '../components/AppNav'
 import {
   ComposableMap,
   Geographies,
@@ -174,7 +176,10 @@ const RADAR_SECTOR_COLOR: Record<string, string> = {
   infrastructure: '#64748b',
 }
 
-export default function MapPage() {
+function MapPageInner() {
+  const searchParams = useSearchParams()
+  const embed = searchParams.get('embed') === '1'
+
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null)
   const [hoveredOpp, setHoveredOpp] = useState<Opportunity | null>(null)
   const [selectedRadarSignal, setSelectedRadarSignal] = useState<OTRadarSignal | null>(null)
@@ -281,27 +286,35 @@ export default function MapPage() {
     return Array.from(s).sort()
   }, [])
 
+  const mainMapHeight = embed ? 'calc(100vh - 52px)' : 'calc(100vh - 200px)'
+
   return (
     <div style={{
-      minHeight: '100vh',
+      minHeight: embed ? '100vh' : '100vh',
+      paddingTop: embed ? 0 : 0,
       backgroundColor: COLORS.bg,
       color: COLORS.text,
       fontFamily: 'system-ui, -apple-system, sans-serif',
     }}>
+      {!embed && <AppNav />}
+      <div style={{ paddingTop: embed ? 0 : '7.5rem' }}>
       {/* Header */}
+      {!embed && (
       <header style={{
-        padding: '1rem 2rem',
+        padding: '0 2rem 1rem',
         borderBottom: `1px solid ${COLORS.border}`,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
+        flexWrap: 'wrap',
+        gap: '0.75rem',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-          <Link href="/radar" style={{ color: COLORS.textMuted, textDecoration: 'none' }}>
-            ← Back to Radar
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <Link href="/radar" style={{ color: COLORS.textMuted, textDecoration: 'none', fontSize: '0.875rem' }}>
+            ← Command center
           </Link>
-          <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>
-            🗺️ AI Manhattan Project — Geographic View
+          <h1 style={{ margin: 0, fontSize: '1.35rem', fontWeight: 600 }}>
+            🗺️ Geographic pipeline
           </h1>
         </div>
         <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.875rem', alignItems: 'center' }}>
@@ -337,15 +350,17 @@ export default function MapPage() {
           </button>
         </div>
       </header>
+      )}
 
       {/* Filters */}
       <div style={{
-        padding: '1rem 2rem',
+        padding: embed ? '0.5rem 0.75rem' : '1rem 2rem',
         borderBottom: `1px solid ${COLORS.border}`,
         display: 'flex',
-        gap: '1.5rem',
+        gap: embed ? '0.75rem' : '1.5rem',
         alignItems: 'center',
         flexWrap: 'wrap',
+        backgroundColor: embed ? 'rgba(15, 23, 42, 0.95)' : undefined,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <label style={{ color: COLORS.textMuted, fontSize: '0.875rem' }}>Sector:</label>
@@ -420,7 +435,7 @@ export default function MapPage() {
       </div>
 
       {/* Main content */}
-      <div style={{ display: 'flex', height: 'calc(100vh - 140px)' }}>
+      <div style={{ display: 'flex', height: mainMapHeight }}>
         {/* Map */}
         <div style={{ flex: 1, position: 'relative' }}>
           <ComposableMap
@@ -946,6 +961,8 @@ export default function MapPage() {
         )}
       </div>
 
+      </div>
+
       {/* Animations */}
       <style jsx global>{`
         @keyframes pulse {
@@ -957,5 +974,29 @@ export default function MapPage() {
         }
       `}</style>
     </div>
+  )
+}
+
+export default function MapPage() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            minHeight: '100vh',
+            backgroundColor: '#030712',
+            color: '#94a3b8',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: 'system-ui, sans-serif',
+          }}
+        >
+          Loading map…
+        </div>
+      }
+    >
+      <MapPageInner />
+    </Suspense>
   )
 }

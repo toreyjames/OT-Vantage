@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
+import AppNav from '../components/AppNav'
 import { PolicyUpdate, OpportunitySignal, SystemStatus } from '@/lib/services/types'
 
 // Colors
@@ -98,18 +98,7 @@ export default function MonitorPage() {
 
   return (
     <main style={styles.main}>
-      {/* Navigation */}
-      <nav style={styles.nav}>
-        <div style={styles.navBrand}>
-          <div style={styles.brandIcon}>⚡</div>
-          <span style={styles.brandText}>OT Vantage</span>
-        </div>
-        <div style={styles.navLinks}>
-          <Link href="/radar" style={styles.navLink}>Radar</Link>
-          <Link href="/scoreboard" style={styles.navLink}>Scoreboard</Link>
-          <Link href="/monitor" style={{ ...styles.navLink, ...styles.navLinkActive }}>Monitor</Link>
-        </div>
-      </nav>
+      <AppNav />
 
       <div style={styles.container}>
         {/* BLUF Statement */}
@@ -393,49 +382,10 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '8px',
     border: `1px solid ${COLORS.border}`,
   },
-  nav: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '1rem 2rem',
-    borderBottom: `1px solid ${COLORS.border}`,
-    position: 'sticky',
-    top: 0,
-    backgroundColor: COLORS.bg,
-    zIndex: 100,
-  },
-  navBrand: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-  },
-  brandIcon: {
-    fontSize: '1.5rem',
-  },
-  brandText: {
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    color: COLORS.accent,
-  },
-  navLinks: {
-    display: 'flex',
-    gap: '1rem',
-  },
-  navLink: {
-    padding: '0.5rem 1rem',
-    color: COLORS.textMuted,
-    textDecoration: 'none',
-    borderRadius: '8px',
-    transition: 'all 0.2s',
-  },
-  navLinkActive: {
-    backgroundColor: COLORS.danger,
-    color: COLORS.text,
-  },
   container: {
     maxWidth: '1600px',
     margin: '0 auto',
-    padding: '2rem',
+    padding: '8.75rem 2rem 2rem',
   },
   header: {
     marginBottom: '2rem',

@@ -7,7 +7,7 @@ export default function Home() {
   const router = useRouter()
   
   useEffect(() => {
-    router.replace('/agents')
+    router.replace('/radar')
   }, [router])
 
   return (
@@ -19,7 +19,7 @@ export default function Home() {
       justifyContent: 'center',
       color: '#737373',
     }}>
-      Redirecting to OT Vantage...
+      Opening Build Clock…
     </div>
   )
 }

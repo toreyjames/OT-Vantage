@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import AppNav from '../components/AppNav'
 import { opportunities } from '../../lib/data/opportunities'
 
 // ============================================================================
@@ -180,20 +181,7 @@ export default function AboutPage() {
 
   return (
     <main style={styles.main}>
-      <nav style={styles.nav}>
-        <div style={styles.navBrand}>
-          <div style={styles.brandIcon}>⚡</div>
-          <span style={styles.brandText}>OT Vantage</span>
-        </div>
-        <div style={styles.navLinks}>
-          <Link href="/radar" style={styles.navLink}>
-            Radar
-          </Link>
-          <Link href="/about" style={{ ...styles.navLink, ...styles.navLinkActive }}>
-            About
-          </Link>
-        </div>
-      </nav>
+      <AppNav />
 
       <div style={styles.container}>
         {/* HERO SECTION */}
@@ -423,57 +411,10 @@ const styles: Record<string, React.CSSProperties> = {
     color: COLORS.text,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
   },
-  nav: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 100,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '1rem 2rem',
-    backgroundColor: 'rgba(10, 15, 20, 0.9)',
-    backdropFilter: 'blur(20px)',
-    borderBottom: `1px solid ${COLORS.border}`,
-  },
-  navBrand: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-  },
-  brandIcon: {
-    fontSize: '1.5rem',
-  },
-  brandText: {
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    background: `linear-gradient(135deg, ${COLORS.text} 0%, ${COLORS.accent} 100%)`,
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-  },
-  navLinks: {
-    display: 'flex',
-    gap: '0.5rem',
-  },
-  navLink: {
-    padding: '0.5rem 1rem',
-    color: COLORS.textMuted,
-    textDecoration: 'none',
-    fontSize: '0.875rem',
-    fontWeight: 500,
-    borderRadius: '6px',
-    transition: 'all 0.2s',
-  },
-  navLinkActive: {
-    color: COLORS.accent,
-    backgroundColor: COLORS.accent + '22',
-  },
   container: {
     maxWidth: '1400px',
     margin: '0 auto',
-    padding: '5rem 2rem 3rem',
+    padding: '8.75rem 2rem 3rem',
   },
   header: {
     marginBottom: '2.5rem',

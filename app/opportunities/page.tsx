@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import AppNav from '../components/AppNav'
 import { opportunities, type Opportunity } from '../../lib/data/opportunities'
 import type { OTRadarSignal } from '../../lib/types/ot-radar-signal'
 
@@ -248,10 +249,11 @@ export default function OpportunitiesPage() {
 
   return (
     <main style={styles.main}>
+      <AppNav />
       <div style={styles.container}>
         <header style={styles.header}>
           <div>
-            <Link href="/" style={styles.backLink}>← OT Vantage</Link>
+            <Link href="/radar" style={styles.backLink}>← Command center</Link>
             <h1 style={styles.title}>
               <span style={{ color: COLORS.accent }}>OPPORTUNITY</span> RADAR
             </h1>
@@ -872,7 +874,7 @@ const styles: Record<string, React.CSSProperties> = {
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
-    padding: '2rem',
+    padding: '8.75rem 2rem 2rem',
   },
   header: {
     display: 'flex',

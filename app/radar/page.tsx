@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import AppNav from '../components/AppNav'
 import { opportunities, TRUMP_POLICIES, type Opportunity, type TrumpPolicyAlignment } from '../../lib/data/opportunities'
 import type { PolicyUpdate, OpportunitySignal } from '../../lib/services/types'
 import type { OTRadarSignal } from '../../lib/types/ot-radar-signal'
@@ -359,37 +360,18 @@ export default function RadarPage() {
 
   return (
     <main style={styles.main}>
-      <nav style={styles.nav}>
-        <div style={styles.navBrand}>
-          <div style={styles.brandIcon}>⚡</div>
-          <span style={styles.brandText}>OT Vantage</span>
-        </div>
-        <div style={styles.navLinks}>
-          <Link href="/radar" style={{ ...styles.navLink, ...styles.navLinkActive }}>
-            Radar
-          </Link>
-          <Link href="/agents" style={styles.navLink}>
-            Agents
-          </Link>
-          <Link href="/opportunities" style={styles.navLink}>
-            Pipeline
-          </Link>
-          <Link href="/map" style={styles.navLink}>
-            Map
-          </Link>
-          <Link href="/about" style={styles.navLink}>
-            About
-          </Link>
-        </div>
-      </nav>
+      <AppNav />
 
       <div style={styles.container}>
         {/* Header */}
         <header style={styles.header}>
           <div>
-            <h1 style={styles.title}>AI Manhattan Project</h1>
-            <p style={styles.subtitle}>
-              Industrial rebuild pipeline tracking
+            <h1 style={styles.title}>Build Clock</h1>
+            <p style={{ ...styles.subtitle, letterSpacing: '0.15em', fontSize: '0.8rem', textTransform: 'uppercase' as const }}>
+              Scan · Qualify · Track · Close
+            </p>
+            <p style={{ ...styles.subtitle, marginTop: '0.5rem', fontSize: '0.95rem' }}>
+              Command center — industrial pipeline, live signals, and geography (OT Vantage)
             </p>
           </div>
         </header>
@@ -960,6 +942,31 @@ export default function RadarPage() {
             </div>
           )}
         </div>
+
+        {/* Geographic pipeline — same /map experience, embedded */}
+        <section style={{ marginTop: '3rem', marginBottom: '2rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.5rem' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 700, margin: 0 }}>Geographic pipeline</h2>
+            <Link href="/map" style={{ color: COLORS.blue, fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500 }}>
+              Open full-screen map →
+            </Link>
+          </div>
+          <p style={{ color: COLORS.textMuted, fontSize: '0.875rem', marginBottom: '0.75rem', lineHeight: 1.5 }}>
+            Same opportunity dataset as Pipeline and Command: state heat map, project markers, and OT Radar layer. Use full screen for filters and detail panels.
+          </p>
+          <div
+            style={{
+              borderRadius: '12px',
+              overflow: 'hidden',
+              border: `1px solid ${COLORS.border}`,
+              height: 'min(72vh, 760px)',
+              backgroundColor: COLORS.bgCard,
+              boxShadow: '0 8px 40px rgba(0,0,0,0.35)',
+            }}
+          >
+            <iframe title="Build Clock geographic pipeline" src="/map?embed=1" style={{ width: '100%', height: '100%', border: 'none', display: 'block' }} />
+          </div>
+        </section>
       </div>
     </main>
   )
@@ -975,57 +982,10 @@ const styles: Record<string, React.CSSProperties> = {
     color: COLORS.text,
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
   },
-  nav: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 100,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '1rem 2rem',
-    backgroundColor: 'rgba(10, 15, 20, 0.9)',
-    backdropFilter: 'blur(20px)',
-    borderBottom: `1px solid ${COLORS.border}`,
-  },
-  navBrand: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-  },
-  brandIcon: {
-    fontSize: '1.5rem',
-  },
-  brandText: {
-    fontSize: '1.25rem',
-    fontWeight: 700,
-    background: `linear-gradient(135deg, ${COLORS.text} 0%, ${COLORS.accent} 100%)`,
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text',
-  },
-  navLinks: {
-    display: 'flex',
-    gap: '0.5rem',
-  },
-  navLink: {
-    padding: '0.5rem 1rem',
-    color: COLORS.textMuted,
-    textDecoration: 'none',
-    fontSize: '0.875rem',
-    fontWeight: 500,
-    borderRadius: '6px',
-    transition: 'all 0.2s',
-  },
-  navLinkActive: {
-    color: COLORS.accent,
-    backgroundColor: COLORS.accent + '22',
-  },
   container: {
     maxWidth: '1600px',
     margin: '0 auto',
-    padding: '6rem 2rem 2rem',
+    padding: '8.75rem 2rem 2rem',
   },
   header: {
     marginBottom: '2rem',
