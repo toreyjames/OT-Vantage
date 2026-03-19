@@ -187,6 +187,17 @@ function MapPageInner() {
   const [radarStatus, setRadarStatus] = useState<string>('loading')
   const [sectorFilter, setSectorFilter] = useState<string>('all')
   const [priorityFilter, setPriorityFilter] = useState<string>('all')
+
+  // Broadcast filter changes to parent (radar page) when embedded
+  useEffect(() => {
+    if (!embed) return
+    try {
+      window.parent.postMessage(
+        { type: 'ov-map-filter', sector: sectorFilter, priority: priorityFilter },
+        '*',
+      )
+    } catch { /* cross-origin guard */ }
+  }, [sectorFilter, priorityFilter, embed])
   const [showRadarLayer, setShowRadarLayer] = useState(true)
   const [zoom, setZoom] = useState(1)
   const [center, setCenter] = useState<[number, number]>([-96, 38])

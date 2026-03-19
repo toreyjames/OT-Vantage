@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import {
   opportunities,
@@ -70,8 +70,26 @@ export default function RadarPage() {
   const [view, setView] = useState<'list' | 'timeline'>('list')
   const [selected, setSelected] = useState<Opportunity | null>(null)
 
+  // Synced from the map iframe's sector/priority dropdowns
+  const [mapSector, setMapSector] = useState('all')
+  const [mapPriority, setMapPriority] = useState('all')
+
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type !== 'ov-map-filter') return
+      setMapSector(e.data.sector ?? 'all')
+      setMapPriority(e.data.priority ?? 'all')
+    }
+    window.addEventListener('message', handler)
+    return () => window.removeEventListener('message', handler)
+  }, [])
+
+  const hasMapFilter = mapSector !== 'all' || mapPriority !== 'all'
+
   const filtered = useMemo(() => {
     let f = [...opportunities]
+    if (mapSector !== 'all') f = f.filter((o) => o.sector === mapSector)
+    if (mapPriority !== 'all') f = f.filter((o) => o.priority === mapPriority)
     if (search) {
       const q = search.toLowerCase()
       f = f.filter(
@@ -84,7 +102,7 @@ export default function RadarPage() {
       )
     }
     return f.sort((a, b) => b.investmentSize - a.investmentSize)
-  }, [search])
+  }, [search, mapSector, mapPriority])
 
   const timeline = useMemo(() => {
     const byDate: Record<string, Opportunity[]> = {}
@@ -167,6 +185,18 @@ export default function RadarPage() {
               <button style={view === 'timeline' ? S.tabActive : S.tab} onClick={() => setView('timeline')}>Timeline</button>
             </div>
           </div>
+
+          {/* Active filter indicator */}
+          {hasMapFilter && (
+            <div style={S.filterBanner}>
+              <span>
+                Filtered by map: {mapSector !== 'all' ? mapSector.replace(/-/g, ' ') : ''}{mapSector !== 'all' && mapPriority !== 'all' ? ' · ' : ''}{mapPriority !== 'all' ? mapPriority : ''}
+              </span>
+              <span style={{ color: C.muted, marginLeft: '0.25rem' }}>
+                ({filtered.length} of {opportunities.length})
+              </span>
+            </div>
+          )}
 
           {/* Search */}
           <div style={S.searchWrap}>
@@ -516,6 +546,19 @@ const S: Record<string, React.CSSProperties> = {
     fontSize: '0.75rem',
     fontWeight: 600,
     cursor: 'pointer',
+  },
+
+  // Filter banner (synced from map)
+  filterBanner: {
+    padding: '0.375rem 0.625rem',
+    marginBottom: '0.5rem',
+    backgroundColor: C.blue + '18',
+    border: `1px solid ${C.blue}44`,
+    borderRadius: '6px',
+    fontSize: '0.75rem',
+    color: C.blue,
+    fontWeight: 500,
+    textTransform: 'capitalize' as const,
   },
 
   // Search
