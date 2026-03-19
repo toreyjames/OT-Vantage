@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 const COLORS = {
   border: '#21262d',
@@ -13,7 +14,7 @@ const COLORS = {
 const LINKS = [
   { href: '/radar', label: 'Command' },
   { href: '/opportunities', label: 'Pipeline' },
-  { href: '/map', label: 'Map' },
+  { href: '/radar#build-clock-map', label: 'Map' },
   { href: '/agents', label: 'Intelligence' },
   { href: '/scoreboard', label: 'Scoreboard' },
   { href: '/monitor', label: 'Monitor' },
@@ -22,6 +23,14 @@ const LINKS = [
 
 export default function AppNav() {
   const pathname = usePathname()
+  const [hash, setHash] = useState('')
+
+  useEffect(() => {
+    const sync = () => setHash(typeof window !== 'undefined' ? window.location.hash : '')
+    sync()
+    window.addEventListener('hashchange', sync)
+    return () => window.removeEventListener('hashchange', sync)
+  }, [pathname])
 
   return (
     <nav
@@ -75,22 +84,36 @@ export default function AppNav() {
       </Link>
       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
         {LINKS.map(({ href, label }) => {
-          const active = pathname === href || (href !== '/radar' && pathname?.startsWith(href + '/'))
-          const isRadar = href === '/radar'
-          const activePath = isRadar ? pathname === '/radar' || pathname === '/' : active
+          const pathOnly = href.split('#')[0]
+          const onConsole =
+            pathname === '/radar' || pathname === '/'
+          const mapJump = href === '/radar#build-clock-map'
+          const commandLink = href === '/radar'
+
+          let highlighted = false
+          if (commandLink) {
+            highlighted = onConsole && hash !== '#build-clock-map'
+          } else if (mapJump) {
+            highlighted = pathname === '/radar' && hash === '#build-clock-map'
+          } else {
+            highlighted =
+              pathname === pathOnly ||
+              (pathOnly !== '/radar' && pathname?.startsWith(pathOnly + '/'))
+          }
+
           return (
             <Link
               key={href}
               href={href}
               style={{
                 padding: '0.45rem 0.85rem',
-                color: activePath ? COLORS.accent : COLORS.textMuted,
+                color: highlighted ? COLORS.accent : COLORS.textMuted,
                 textDecoration: 'none',
                 fontSize: '0.8125rem',
                 fontWeight: 500,
                 borderRadius: '6px',
-                backgroundColor: activePath ? COLORS.accent + '22' : 'transparent',
-                border: activePath ? `1px solid ${COLORS.accent}44` : '1px solid transparent',
+                backgroundColor: highlighted ? COLORS.accent + '22' : 'transparent',
+                border: highlighted ? `1px solid ${COLORS.accent}44` : '1px solid transparent',
               }}
             >
               {label}

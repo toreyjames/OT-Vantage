@@ -222,7 +222,7 @@ export default function RadarPage() {
     pendingCount: 0,
     savedSignals: 0
   })
-  const [showLivePanel, setShowLivePanel] = useState(true)
+  const [showLivePanel, setShowLivePanel] = useState(false)
   const [promoting, setPromoting] = useState<string | null>(null)
 
   // Fetch live intelligence
@@ -371,7 +371,7 @@ export default function RadarPage() {
               Scan · Qualify · Track · Close
             </p>
             <p style={{ ...styles.subtitle, marginTop: '0.5rem', fontSize: '0.95rem' }}>
-              Command center — industrial pipeline, live signals, and geography (OT Vantage)
+              One screen: <strong style={{ color: COLORS.text }}>Jupiter tracker</strong> + <strong style={{ color: COLORS.text }}>map</strong> — same pipeline, two lenses (OT Vantage)
             </p>
           </div>
         </header>
@@ -665,6 +665,18 @@ export default function RadarPage() {
           )}
         </div>
 
+        {/* Single-page workspace: Jupiter tracker | Map (side-by-side on wide screens) */}
+        <div style={styles.workspaceSplit}>
+          <div style={styles.trackerColumn}>
+            <div style={styles.pillarHeader}>
+              <div>
+                <h2 style={styles.pillarTitle}>Jupiter tracker</h2>
+                <p style={styles.pillarSubtitle}>
+                  Live intelligence, search, and the full opportunity set (list or timeline)
+                </p>
+              </div>
+            </div>
+
         {/* Main Content */}
         <div style={styles.mainContent}>
           {/* Detail Panel - shows at TOP when opportunity selected IN LIST VIEW ONLY */}
@@ -777,7 +789,7 @@ export default function RadarPage() {
             /* LIST VIEW */
             <div style={styles.listViewGrid}>
               {/* Opportunity Cards */}
-              <div style={styles.opportunitiesGrid}>
+              <div style={styles.opportunitiesGridTracker}>
                 {filteredOpportunities.map((opp) => (
                   <button
                     key={opp.id}
@@ -942,31 +954,28 @@ export default function RadarPage() {
             </div>
           )}
         </div>
+          </div>
 
-        {/* Geographic pipeline — same /map experience, embedded */}
-        <section style={{ marginTop: '3rem', marginBottom: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.5rem' }}>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 700, margin: 0 }}>Geographic pipeline</h2>
-            <Link href="/map" style={{ color: COLORS.blue, fontSize: '0.875rem', textDecoration: 'none', fontWeight: 500 }}>
-              Open full-screen map →
-            </Link>
+          <div style={styles.mapColumn} id="build-clock-map">
+            <div style={styles.pillarHeader}>
+              <div>
+                <h2 style={styles.pillarTitle}>Map</h2>
+                <p style={styles.pillarSubtitle}>
+                  State heat map, markers, OT Radar layer — same dataset as the tracker
+                </p>
+              </div>
+              <Link
+                href="/map"
+                style={{ color: COLORS.blue, fontSize: '0.8125rem', textDecoration: 'none', fontWeight: 600, whiteSpace: 'nowrap' }}
+              >
+                Full screen →
+              </Link>
+            </div>
+            <div style={styles.mapFrame}>
+              <iframe title="Build Clock map" src="/map?embed=1" style={{ width: '100%', height: '100%', border: 'none', display: 'block' }} />
+            </div>
           </div>
-          <p style={{ color: COLORS.textMuted, fontSize: '0.875rem', marginBottom: '0.75rem', lineHeight: 1.5 }}>
-            Same opportunity dataset as Pipeline and Command: state heat map, project markers, and OT Radar layer. Use full screen for filters and detail panels.
-          </p>
-          <div
-            style={{
-              borderRadius: '12px',
-              overflow: 'hidden',
-              border: `1px solid ${COLORS.border}`,
-              height: 'min(72vh, 760px)',
-              backgroundColor: COLORS.bgCard,
-              boxShadow: '0 8px 40px rgba(0,0,0,0.35)',
-            }}
-          >
-            <iframe title="Build Clock geographic pipeline" src="/map?embed=1" style={{ width: '100%', height: '100%', border: 'none', display: 'block' }} />
-          </div>
-        </section>
+        </div>
       </div>
     </main>
   )
@@ -983,7 +992,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, sans-serif",
   },
   container: {
-    maxWidth: '1600px',
+    maxWidth: '1760px',
     margin: '0 auto',
     padding: '8.75rem 2rem 2rem',
   },
@@ -1185,9 +1194,64 @@ const styles: Record<string, React.CSSProperties> = {
     color: COLORS.textMuted,
   },
 
+  // Single-page workspace (Jupiter tracker + map)
+  workspaceSplit: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 440px), 1fr))',
+    gap: '1.25rem',
+    alignItems: 'stretch',
+    width: '100%',
+  },
+  trackerColumn: {
+    minWidth: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: 'min(78vh, 880px)',
+    maxHeight: 'min(78vh, 880px)',
+  },
+  mapColumn: {
+    minWidth: 0,
+    display: 'flex',
+    flexDirection: 'column',
+    minHeight: 'min(78vh, 880px)',
+    maxHeight: 'min(78vh, 880px)',
+  },
+  mapFrame: {
+    flex: 1,
+    minHeight: 0,
+    borderRadius: '12px',
+    overflow: 'hidden',
+    border: `1px solid ${COLORS.border}`,
+    backgroundColor: COLORS.bgCard,
+    boxShadow: '0 8px 40px rgba(0,0,0,0.35)',
+  },
+  pillarHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: '0.75rem',
+    marginBottom: '0.5rem',
+    flexWrap: 'wrap',
+  },
+  pillarTitle: {
+    margin: 0,
+    fontSize: '1.125rem',
+    fontWeight: 700,
+    color: COLORS.accent,
+  },
+  pillarSubtitle: {
+    margin: '0.25rem 0 0',
+    fontSize: '0.78rem',
+    color: COLORS.textMuted,
+    lineHeight: 1.45,
+    maxWidth: '480px',
+  },
+
   // Main Content
   mainContent: {
-    minHeight: '400px',
+    flex: 1,
+    minHeight: 0,
+    overflowY: 'auto',
   },
   listViewGrid: {
     display: 'flex',
@@ -1198,6 +1262,11 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
     gap: '1rem',
+  },
+  opportunitiesGridTracker: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+    gap: '0.75rem',
   },
 
   // Opportunity Card

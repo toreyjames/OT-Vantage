@@ -13,7 +13,7 @@ This app is **one product**: **Build Clock** is the Deloitte-facing name; **OT V
 
 | Route | Purpose |
 |-------|---------|
-| `/` → `/radar` | Command center: live intel, opportunity list/timeline, **embedded geographic map** |
+| `/` → `/radar` | **One page:** Jupiter tracker (live intel, list/timeline) **+ map** side-by-side; live panel starts collapsed (click to expand) |
 | `/opportunities` | Full pipeline / filters |
 | `/map` | Full-screen map (same data; filters + detail panels) |
 | `/agents` | Intelligence / agents |
