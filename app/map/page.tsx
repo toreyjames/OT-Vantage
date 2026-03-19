@@ -188,16 +188,18 @@ function MapPageInner() {
   const [sectorFilter, setSectorFilter] = useState<string>('all')
   const [priorityFilter, setPriorityFilter] = useState<string>('all')
 
+  const [stateFilter, setStateFilter] = useState<string | null>(null)
+
   // Broadcast filter changes to parent (radar page) when embedded
   useEffect(() => {
     if (!embed) return
     try {
       window.parent.postMessage(
-        { type: 'ov-map-filter', sector: sectorFilter, priority: priorityFilter },
+        { type: 'ov-map-filter', sector: sectorFilter, priority: priorityFilter, state: stateFilter },
         '*',
       )
     } catch { /* cross-origin guard */ }
-  }, [sectorFilter, priorityFilter, embed])
+  }, [sectorFilter, priorityFilter, stateFilter, embed])
   const [showRadarLayer, setShowRadarLayer] = useState(true)
   const [zoom, setZoom] = useState(1)
   const [center, setCenter] = useState<[number, number]>([-96, 38])
@@ -471,16 +473,23 @@ function MapPageInner() {
                       <Geography
                         key={geo.rsmKey}
                         geography={geo}
-                        fill={fillColor}
-                        stroke={hasInvestment ? 'rgba(16, 185, 129, 0.4)' : COLORS.border}
-                        strokeWidth={hasInvestment ? 0.8 : 0.3}
+                        fill={stateFilter === code ? brighten(fillColor, 0.35) : fillColor}
+                        stroke={stateFilter === code ? '#4ade80' : hasInvestment ? 'rgba(16, 185, 129, 0.4)' : COLORS.border}
+                        strokeWidth={stateFilter === code ? 2 : hasInvestment ? 0.8 : 0.3}
+                        onClick={() => {
+                          if (!code) return
+                          setStateFilter(stateFilter === code ? null : code)
+                          setSelectedOpp(null)
+                          setSelectedRadarSignal(null)
+                        }}
                         style={{
-                          default: { outline: 'none' },
+                          default: { outline: 'none', cursor: hasInvestment ? 'pointer' : 'default' },
                           hover: {
                             fill: brighten(fillColor, 0.25),
                             stroke: hasInvestment ? 'rgba(74, 222, 128, 0.7)' : '#334155',
                             strokeWidth: hasInvestment ? 1.2 : 0.6,
                             outline: 'none',
+                            cursor: hasInvestment ? 'pointer' : 'default',
                           },
                           pressed: { outline: 'none' },
                         }}

@@ -64,32 +64,42 @@ const svcLabel = (s: string) => {
   return m[s] || s
 }
 
+const priorityBorder = (p: Opportunity['priority']) => {
+  if (p === 'hot') return `3px solid ${C.danger}`
+  if (p === 'warm') return `3px solid ${C.warn}`
+  return `3px solid transparent`
+}
+
 // ─── Component ──────────────────────────────────────────────────────────────
 export default function RadarPage() {
   const [search, setSearch] = useState('')
   const [view, setView] = useState<'list' | 'timeline'>('list')
   const [selected, setSelected] = useState<Opportunity | null>(null)
 
-  // Synced from the map iframe's sector/priority dropdowns
+  // Synced from the map iframe's filters
   const [mapSector, setMapSector] = useState('all')
   const [mapPriority, setMapPriority] = useState('all')
+  const [mapState, setMapState] = useState<string | null>(null)
 
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (e.data?.type !== 'ov-map-filter') return
       setMapSector(e.data.sector ?? 'all')
       setMapPriority(e.data.priority ?? 'all')
+      setMapState(e.data.state ?? null)
     }
     window.addEventListener('message', handler)
     return () => window.removeEventListener('message', handler)
   }, [])
 
-  const hasMapFilter = mapSector !== 'all' || mapPriority !== 'all'
+  const hasMapFilter = mapSector !== 'all' || mapPriority !== 'all' || !!mapState
 
+  // Filtered opportunities (map filters + search)
   const filtered = useMemo(() => {
     let f = [...opportunities]
     if (mapSector !== 'all') f = f.filter((o) => o.sector === mapSector)
     if (mapPriority !== 'all') f = f.filter((o) => o.priority === mapPriority)
+    if (mapState) f = f.filter((o) => o.location.state === mapState)
     if (search) {
       const q = search.toLowerCase()
       f = f.filter(
@@ -102,21 +112,23 @@ export default function RadarPage() {
       )
     }
     return f.sort((a, b) => b.investmentSize - a.investmentSize)
-  }, [search, mapSector, mapPriority])
+  }, [search, mapSector, mapPriority, mapState])
 
+  // Timeline also respects filters
   const timeline = useMemo(() => {
     const byDate: Record<string, Opportunity[]> = {}
-    opportunities.forEach((o) => {
+    filtered.forEach((o) => {
       if (!o.nextMilestone?.date) return
       const key = new Date(o.nextMilestone.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
       ;(byDate[key] ||= []).push(o)
     })
     return Object.entries(byDate).sort((a, b) => new Date(a[0]).getTime() - new Date(b[0]).getTime())
-  }, [])
+  }, [filtered])
 
+  // Sector breakdown (compact)
   const sectors = useMemo(() => calculateSectorPipeline(opportunities), [])
 
-  // Pipeline stages (Salesforce-style funnel)
+  // Pipeline stages
   const STAGES: { key: NonNullable<Opportunity['procurementStage']>; label: string; color: string }[] = [
     { key: 'monitoring', label: 'Monitoring', color: '#64748b' },
     { key: 'pre-rfp', label: 'Pre-RFP', color: '#8b5cf6' },
@@ -135,19 +147,20 @@ export default function RadarPage() {
     })
   }, [])
 
-  const totalPipeline = useMemo(
-    () => opportunities.reduce((s, o) => s + o.investmentSize, 0),
-    [],
-  )
-  const policyCount = useMemo(
-    () => opportunities.filter((o) => o.trumpPolicyAlignment?.length).length,
-    [],
-  )
+  // Dynamic stats (reflect filters)
+  const filteredPipeline = useMemo(() => filtered.reduce((s, o) => s + o.investmentSize, 0), [filtered])
+  const filteredPolicyCount = useMemo(() => filtered.filter((o) => o.trumpPolicyAlignment?.length).length, [filtered])
+
+  // Filter label for the banner
+  const filterParts: string[] = []
+  if (mapSector !== 'all') filterParts.push(mapSector.replace(/-/g, ' '))
+  if (mapPriority !== 'all') filterParts.push(mapPriority)
+  if (mapState) filterParts.push(mapState)
 
   // ── render ──
   return (
     <main style={S.main}>
-      {/* ── Brand line ─────────────────────────────────────────────────── */}
+      {/* ── Brand line (dynamic stats) ─────────────────────────────── */}
       <header style={S.brand}>
         <div style={S.brandLeft}>
           <span style={{ fontSize: '1.1rem' }}>⏱</span>
@@ -155,15 +168,27 @@ export default function RadarPage() {
           <span style={S.brandTag}>Pipeline Intelligence</span>
         </div>
         <div style={S.brandStats}>
-          <span><strong>{opportunities.length}</strong> opportunities</span>
+          <span><strong>{filtered.length}</strong> opportunities</span>
           <span style={S.dot}>·</span>
-          <span><strong>${(totalPipeline / 1000).toFixed(0)}B</strong> pipeline</span>
+          <span><strong>{fmt(filteredPipeline)}</strong> pipeline</span>
           <span style={S.dot}>·</span>
-          <span><strong>{policyCount}</strong> policy-aligned</span>
+          <span><strong>{filteredPolicyCount}</strong> policy-aligned</span>
         </div>
       </header>
 
-      {/* ── Top row: Map (left) + Jupiter tracker (right) ──────────── */}
+      {/* ── Sector strip (compact) ─────────────────────────────────── */}
+      <div style={S.sectorStrip} className="ov-sector-strip">
+        {sectors.map((s) => (
+          <div key={s.sector} style={S.sectorPill}>
+            <span style={{ ...S.sectorDot, backgroundColor: s.color }} />
+            <span style={S.sectorPillName}>{s.sector}</span>
+            <span style={S.sectorPillVal}>${s.pipeline}B</span>
+            <span style={S.sectorPillCount}>{s.projects}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Top row: Map (40%) + Jupiter tracker (60%) ──────────── */}
       <div style={S.topRow} className="ov-top-row">
         {/* Map */}
         <section style={S.mapPanel}>
@@ -190,7 +215,7 @@ export default function RadarPage() {
           {hasMapFilter && (
             <div style={S.filterBanner}>
               <span>
-                Filtered by map: {mapSector !== 'all' ? mapSector.replace(/-/g, ' ') : ''}{mapSector !== 'all' && mapPriority !== 'all' ? ' · ' : ''}{mapPriority !== 'all' ? mapPriority : ''}
+                Filtered by map: {filterParts.join(' · ')}
               </span>
               <span style={{ color: C.muted, marginLeft: '0.25rem' }}>
                 ({filtered.length} of {opportunities.length})
@@ -220,7 +245,13 @@ export default function RadarPage() {
               <Detail opp={selected} onClose={() => setSelected(null)} />
             )}
 
-            {view === 'list' ? (
+            {/* Empty state */}
+            {filtered.length === 0 ? (
+              <div style={S.emptyState}>
+                No opportunities match the current filters.
+                {hasMapFilter && <span> Try resetting the map filters.</span>}
+              </div>
+            ) : view === 'list' ? (
               <div style={S.grid}>
                 {filtered.map((o) => (
                   <OppCard
@@ -234,7 +265,7 @@ export default function RadarPage() {
             ) : (
               <div style={S.timelineWrap}>
                 {timeline.length === 0 ? (
-                  <p style={{ color: C.muted, fontStyle: 'italic' }}>No milestones scheduled</p>
+                  <div style={S.emptyState}>No milestones scheduled for the current filter.</div>
                 ) : (
                   timeline.map(([month, opps]) => (
                     <div key={month} style={S.tlMonth}>
@@ -269,42 +300,9 @@ export default function RadarPage() {
         </section>
       </div>
 
-      {/* ── Bottom row: Sector breakdown ───────────────────────────── */}
-      <section style={S.sectorSection}>
-        <h2 style={S.sectorHeading}>Industry Breakdown</h2>
-        <div style={S.sectorGrid} className="ov-sector-grid">
-          {sectors.map((s) => (
-            <div key={s.sector} style={S.sectorCard}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <span style={{ ...S.sectorDot, backgroundColor: s.color }} />
-                <span style={S.sectorName}>{s.sector}</span>
-              </div>
-              <div style={S.sectorNumbers}>
-                <span style={S.sectorPipeline}>${s.pipeline}B</span>
-                <span style={S.sectorProjects}>{s.projects} projects</span>
-              </div>
-              <div style={S.sectorBar}>
-                <div
-                  style={{
-                    ...S.sectorBarFill,
-                    width: `${Math.min(100, (s.pipeline / (sectors[0]?.pipeline || 1)) * 100)}%`,
-                    backgroundColor: s.color,
-                  }}
-                />
-              </div>
-              <div style={S.sectorMeta}>
-                <span style={{ textTransform: 'capitalize' }}>{s.quality}</span>
-                <span style={S.dot}>·</span>
-                <span style={{ textTransform: 'capitalize' }}>{s.economicImpact}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* ── Pipeline Tracker (Salesforce-style stage funnel) ────────── */}
       <section style={S.pipeSection}>
-        <h2 style={S.sectorHeading}>Pipeline Tracker</h2>
+        <h2 style={S.sectionHeading}>Pipeline Tracker</h2>
 
         {/* Stage bar */}
         <div style={S.stageBar} className="ov-stage-bar">
@@ -361,7 +359,15 @@ export default function RadarPage() {
 
 function OppCard({ opp, active, onClick }: { opp: Opportunity; active: boolean; onClick: () => void }) {
   return (
-    <button style={{ ...S.card, ...(active ? S.cardActive : {}), textAlign: 'left' as const }} onClick={onClick}>
+    <button
+      style={{
+        ...S.card,
+        ...(active ? S.cardActive : {}),
+        textAlign: 'left' as const,
+        borderLeft: priorityBorder(opp.priority),
+      }}
+      onClick={onClick}
+    >
       <div style={S.cardHead}>
         <span style={S.cardCompany}>{opp.company}</span>
         <span style={S.cardVal}>{fmt(opp.investmentSize)}</span>
@@ -479,7 +485,7 @@ const S: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     padding: '0.875rem 0',
     borderBottom: `1px solid ${C.border}`,
-    marginBottom: '1.25rem',
+    marginBottom: '0.75rem',
     flexWrap: 'wrap',
     gap: '0.75rem',
   },
@@ -496,12 +502,36 @@ const S: Record<string, React.CSSProperties> = {
   brandStats: { display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8125rem', color: C.muted },
   dot: { opacity: 0.4 },
 
-  // Top row
+  // Sector strip (compact horizontal)
+  sectorStrip: {
+    display: 'flex',
+    gap: '0.5rem',
+    marginBottom: '1rem',
+    overflowX: 'auto',
+    paddingBottom: '0.25rem',
+  },
+  sectorPill: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.35rem',
+    padding: '0.3rem 0.625rem',
+    backgroundColor: C.card,
+    border: `1px solid ${C.border}`,
+    borderRadius: '20px',
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
+  },
+  sectorDot: { width: 8, height: 8, borderRadius: '50%', flexShrink: 0 },
+  sectorPillName: { fontSize: '0.6875rem', fontWeight: 600, color: C.text },
+  sectorPillVal: { fontSize: '0.6875rem', fontWeight: 700, color: C.accent, fontFamily: "'JetBrains Mono', monospace" },
+  sectorPillCount: { fontSize: '0.625rem', color: C.muted },
+
+  // Top row (40/60 split)
   topRow: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: '2fr 3fr',
     gap: '1.25rem',
-    marginBottom: '2rem',
+    marginBottom: '1.5rem',
     minHeight: 'min(72vh, 780px)',
   },
 
@@ -548,7 +578,7 @@ const S: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
   },
 
-  // Filter banner (synced from map)
+  // Filter banner
   filterBanner: {
     padding: '0.375rem 0.625rem',
     marginBottom: '0.5rem',
@@ -577,6 +607,15 @@ const S: Record<string, React.CSSProperties> = {
 
   // Scrollable tracker body
   trackerScroll: { flex: 1, minHeight: 0, overflowY: 'auto' },
+
+  // Empty state
+  emptyState: {
+    padding: '2rem',
+    textAlign: 'center',
+    color: C.muted,
+    fontSize: '0.875rem',
+    fontStyle: 'italic',
+  },
 
   // Card grid
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.625rem' },
@@ -632,14 +671,11 @@ const S: Record<string, React.CSSProperties> = {
   procBadge: { padding: '0.15rem 0.5rem', backgroundColor: C.card, border: `1px solid ${C.border}`, borderRadius: '4px', fontSize: '0.6875rem', color: C.text },
   rfpLink: { fontSize: '0.6875rem', color: C.blue, textDecoration: 'none', fontWeight: 600 },
 
-  // Impact
   impactBlock: { marginTop: '0.75rem' },
   impactLabel: { fontSize: '0.6875rem', fontWeight: 600, color: C.muted, textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: '0.25rem' },
 
-  // Services tag
   svcTag: { padding: '0.15rem 0.5rem', backgroundColor: C.accent + '18', color: C.accent, borderRadius: '4px', fontSize: '0.6875rem', fontWeight: 500 },
 
-  // Milestone
   milestone: { marginTop: '0.75rem', fontSize: '0.8125rem', color: C.text },
 
   // Timeline
@@ -667,24 +703,8 @@ const S: Record<string, React.CSSProperties> = {
   tlMilestone: { fontSize: '0.75rem', color: C.muted, display: 'block' },
   tlVal: { fontWeight: 700, color: C.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: '0.8125rem' },
 
-  // Sector breakdown
-  sectorSection: { marginTop: '0.5rem', marginBottom: '2rem' },
-  sectorHeading: { fontSize: '1rem', fontWeight: 700, color: C.accent, margin: '0 0 0.75rem' },
-  sectorGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.75rem' },
-  sectorCard: {
-    padding: '1rem',
-    backgroundColor: C.card,
-    border: `1px solid ${C.border}`,
-    borderRadius: '10px',
-  },
-  sectorDot: { width: 10, height: 10, borderRadius: '50%', flexShrink: 0 },
-  sectorName: { fontSize: '0.875rem', fontWeight: 600 },
-  sectorNumbers: { display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.375rem' },
-  sectorPipeline: { fontSize: '1.25rem', fontWeight: 700, color: C.accent, fontFamily: "'JetBrains Mono', monospace" },
-  sectorProjects: { fontSize: '0.75rem', color: C.muted },
-  sectorBar: { height: 4, backgroundColor: C.border, borderRadius: 2, overflow: 'hidden', marginBottom: '0.375rem' },
-  sectorBarFill: { height: '100%', borderRadius: 2, transition: 'width 0.3s' },
-  sectorMeta: { fontSize: '0.6875rem', color: C.muted, display: 'flex', gap: '0.375rem' },
+  // Section heading
+  sectionHeading: { fontSize: '1rem', fontWeight: 700, color: C.accent, margin: '0 0 0.75rem' },
 
   // Pipeline tracker
   pipeSection: { marginBottom: '2rem' },

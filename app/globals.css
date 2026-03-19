@@ -185,6 +185,14 @@ tr:hover {
 
 /* ── OT Vantage responsive ──────────────────────────────────── */
 
+/* Sector strip horizontal scroll */
+.ov-sector-strip {
+  scrollbar-width: none;
+}
+.ov-sector-strip::-webkit-scrollbar {
+  display: none;
+}
+
 /* Stack map + tracker on narrow screens */
 @media (max-width: 1100px) {
   .ov-top-row {
