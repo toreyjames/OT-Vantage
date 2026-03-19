@@ -100,6 +100,38 @@ const COLORS = {
   accent: '#22d3ee',
 }
 
+const HEATMAP_STOPS: [number, number, number][] = [
+  [13, 42, 48],     // dark teal — lowest investment
+  [6, 95, 70],      // #065f46 — low
+  [4, 120, 87],     // emerald — low-mid
+  [16, 185, 129],   // #10b981 — mid
+  [34, 197, 94],    // #22c55e — mid-high
+  [74, 222, 128],   // #4ade80 — high
+  [134, 239, 172],  // #86efac — very high
+]
+
+function interpolateHeatColor(t: number): string {
+  const clamped = Math.max(0, Math.min(1, t))
+  const segCount = HEATMAP_STOPS.length - 1
+  const segment = Math.min(Math.floor(clamped * segCount), segCount - 1)
+  const segT = (clamped * segCount) - segment
+  const [r1, g1, b1] = HEATMAP_STOPS[segment]
+  const [r2, g2, b2] = HEATMAP_STOPS[segment + 1]
+  const r = Math.round(r1 + (r2 - r1) * segT)
+  const g = Math.round(g1 + (g2 - g1) * segT)
+  const b = Math.round(b1 + (b2 - b1) * segT)
+  return `rgb(${r},${g},${b})`
+}
+
+function brighten(color: string, amount: number): string {
+  const match = color.match(/rgb\((\d+),(\d+),(\d+)\)/)
+  if (!match) return '#1e293b'
+  const r = Math.min(255, Math.round(parseInt(match[1]) + (255 - parseInt(match[1])) * amount))
+  const g = Math.min(255, Math.round(parseInt(match[2]) + (255 - parseInt(match[2])) * amount))
+  const b = Math.min(255, Math.round(parseInt(match[3]) + (255 - parseInt(match[3])) * amount))
+  return `rgb(${r},${g},${b})`
+}
+
 const STATE_NAME_TO_CODE: Record<string, string> = {
   'alabama': 'AL', 'alaska': 'AK', 'arizona': 'AZ', 'arkansas': 'AR',
   'california': 'CA', 'colorado': 'CO', 'connecticut': 'CT', 'delaware': 'DE',
@@ -203,6 +235,30 @@ export default function MapPage() {
     return groups
   }, [filteredOpps])
 
+  // Aggregate investment by state for choropleth
+  const { investmentByState, maxStateInvestment, minNonZeroInvestment } = useMemo(() => {
+    const byState: Record<string, number> = {}
+    filteredOpps.forEach(opp => {
+      const st = opp.location.state
+      byState[st] = (byState[st] || 0) + opp.investmentSize
+    })
+    const values = Object.values(byState).filter(v => v > 0)
+    return {
+      investmentByState: byState,
+      maxStateInvestment: values.length > 0 ? Math.max(...values) : 0,
+      minNonZeroInvestment: values.length > 0 ? Math.min(...values) : 0,
+    }
+  }, [filteredOpps])
+
+  const getStateFill = useCallback((geoName: string): string => {
+    const code = STATE_NAME_TO_CODE[geoName.toLowerCase()]
+    if (!code || !investmentByState[code] || maxStateInvestment === 0) return COLORS.bgCard
+    const val = investmentByState[code]
+    // Log scale so moderate-investment states still show color
+    const t = Math.log(1 + val) / Math.log(1 + maxStateInvestment)
+    return interpolateHeatColor(t)
+  }, [investmentByState, maxStateInvestment])
+
   // Get marker position with offset
   const getMarkerPosition = (opp: Opportunity): [number, number] => {
     const baseCoords = STATE_COORDS[opp.location.state]
@@ -248,10 +304,22 @@ export default function MapPage() {
             🗺️ AI Manhattan Project — Geographic View
           </h1>
         </div>
-        <div style={{ display: 'flex', gap: '1rem', fontSize: '0.875rem', alignItems: 'center' }}>
-          <span style={{ color: COLORS.accent }}>{filteredOpps.length} Projects</span>
-          <span style={{ color: '#22c55e' }}>{formatCurrency(totalInvestment)} Pipeline</span>
-          <span style={{ color: '#f59e0b' }}>{totalJobs.toLocaleString()} Jobs</span>
+        <div style={{ display: 'flex', gap: '1.25rem', fontSize: '0.875rem', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: COLORS.accent, display: 'inline-block', boxShadow: `0 0 6px ${COLORS.accent}` }} />
+            <span style={{ color: COLORS.accent, fontWeight: 600 }}>{filteredOpps.length}</span>
+            <span style={{ color: COLORS.textMuted, fontSize: '0.75rem' }}>Projects</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#22c55e', display: 'inline-block', boxShadow: '0 0 6px #22c55e' }} />
+            <span style={{ color: '#22c55e', fontWeight: 600 }}>{formatCurrency(totalInvestment)}</span>
+            <span style={{ color: COLORS.textMuted, fontSize: '0.75rem' }}>Pipeline</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: '#f59e0b', display: 'inline-block', boxShadow: '0 0 6px #f59e0b' }} />
+            <span style={{ color: '#f59e0b', fontWeight: 600 }}>{totalJobs.toLocaleString()}</span>
+            <span style={{ color: COLORS.textMuted, fontSize: '0.75rem' }}>Jobs</span>
+          </div>
           <button
             onClick={() => setShowRadarLayer(!showRadarLayer)}
             style={{
@@ -369,20 +437,30 @@ export default function MapPage() {
             >
               <Geographies geography={geoUrl}>
                 {({ geographies }) =>
-                  geographies.map((geo) => (
-                    <Geography
-                      key={geo.rsmKey}
-                      geography={geo}
-                      fill={COLORS.bgCard}
-                      stroke={COLORS.border}
-                      strokeWidth={0.5}
-                      style={{
-                        default: { outline: 'none' },
-                        hover: { fill: '#1e293b', outline: 'none' },
-                        pressed: { outline: 'none' },
-                      }}
-                    />
-                  ))
+                  geographies.map((geo) => {
+                    const fillColor = getStateFill(geo.properties.name || '')
+                    const code = STATE_NAME_TO_CODE[(geo.properties.name || '').toLowerCase()]
+                    const hasInvestment = code && investmentByState[code] && investmentByState[code] > 0
+                    return (
+                      <Geography
+                        key={geo.rsmKey}
+                        geography={geo}
+                        fill={fillColor}
+                        stroke={hasInvestment ? 'rgba(16, 185, 129, 0.4)' : COLORS.border}
+                        strokeWidth={hasInvestment ? 0.8 : 0.3}
+                        style={{
+                          default: { outline: 'none' },
+                          hover: {
+                            fill: brighten(fillColor, 0.25),
+                            stroke: hasInvestment ? 'rgba(74, 222, 128, 0.7)' : '#334155',
+                            strokeWidth: hasInvestment ? 1.2 : 0.6,
+                            outline: 'none',
+                          },
+                          pressed: { outline: 'none' },
+                        }}
+                      />
+                    )
+                  })
                 }
               </Geographies>
 
@@ -391,7 +469,8 @@ export default function MapPage() {
                 const coords = getMarkerPosition(opp)
                 const isSelected = selectedOpp?.id === opp.id
                 const isHovered = hoveredOpp?.id === opp.id
-                const markerSize = Math.max(6, Math.min(20, Math.sqrt(opp.investmentSize / 50)))
+                const markerSize = Math.max(7, Math.min(22, Math.sqrt(opp.investmentSize / 40)))
+                const sectorColor = getSectorColor(opp.sector)
 
                 return (
                   <Marker
@@ -402,11 +481,17 @@ export default function MapPage() {
                     onMouseLeave={() => setHoveredOpp(null)}
                     style={{ default: { cursor: 'pointer' }, hover: { cursor: 'pointer' }, pressed: { cursor: 'pointer' } }}
                   >
+                    {/* Outer glow for all markers */}
+                    <circle
+                      r={markerSize + 6}
+                      fill={sectorColor}
+                      opacity={isSelected || isHovered ? 0.25 : 0.1}
+                    />
                     {/* Pulse animation for hot items */}
                     {opp.priority === 'hot' && (
                       <circle
-                        r={markerSize + 4}
-                        fill={getSectorColor(opp.sector)}
+                        r={markerSize + 10}
+                        fill={sectorColor}
                         opacity={0.3}
                         style={{
                           animation: 'pulse 2s ease-in-out infinite',
@@ -416,20 +501,28 @@ export default function MapPage() {
                     {/* Main marker */}
                     <circle
                       r={markerSize}
-                      fill={getSectorColor(opp.sector)}
-                      stroke={isSelected || isHovered ? '#fff' : 'rgba(255,255,255,0.3)'}
-                      strokeWidth={isSelected || isHovered ? 2 : 1}
-                      opacity={isSelected || isHovered ? 1 : 0.85}
+                      fill={sectorColor}
+                      stroke={isSelected || isHovered ? '#fff' : 'rgba(255,255,255,0.5)'}
+                      strokeWidth={isSelected || isHovered ? 2.5 : 1}
+                      opacity={isSelected || isHovered ? 1 : 0.9}
+                    />
+                    {/* Inner highlight for depth */}
+                    <circle
+                      r={markerSize * 0.4}
+                      fill="rgba(255,255,255,0.3)"
+                      cx={-markerSize * 0.15}
+                      cy={-markerSize * 0.15}
                     />
                     {/* Investment size label for large projects */}
-                    {opp.investmentSize >= 5000 && zoom >= 1 && (
+                    {opp.investmentSize >= 3000 && zoom >= 1 && (
                       <text
                         textAnchor="middle"
-                        y={markerSize + 12}
+                        y={markerSize + 14}
                         style={{
-                          fontSize: '8px',
-                          fill: COLORS.textMuted,
-                          fontWeight: 500,
+                          fontSize: '9px',
+                          fill: '#e2e8f0',
+                          fontWeight: 600,
+                          textShadow: '0 1px 3px rgba(0,0,0,0.8)',
                         }}
                       >
                         {formatCurrency(opp.investmentSize)}
@@ -529,6 +622,38 @@ export default function MapPage() {
               ⟲
             </button>
           </div>
+
+          {/* Choropleth legend */}
+          {maxStateInvestment > 0 && (
+            <div style={{
+              position: 'absolute',
+              bottom: '1rem',
+              left: '1rem',
+              backgroundColor: 'rgba(3, 7, 18, 0.92)',
+              border: `1px solid rgba(16, 185, 129, 0.2)`,
+              borderRadius: '10px',
+              padding: '0.75rem 1rem',
+              backdropFilter: 'blur(8px)',
+            }}>
+              <div style={{ fontSize: '0.65rem', color: '#94a3b8', marginBottom: '0.5rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                Investment by State
+              </div>
+              <div style={{
+                width: '160px',
+                height: '12px',
+                borderRadius: '6px',
+                background: `linear-gradient(to right, ${HEATMAP_STOPS.map((s, i) => `rgb(${s.join(',')}) ${(i / (HEATMAP_STOPS.length - 1) * 100).toFixed(0)}%`).join(', ')})`,
+                boxShadow: '0 0 12px rgba(16, 185, 129, 0.15)',
+              }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', marginTop: '0.375rem' }}>
+                <span style={{ color: '#6ee7b7' }}>{formatCurrency(minNonZeroInvestment)}</span>
+                <span style={{ color: '#86efac', fontWeight: 600 }}>{formatCurrency(maxStateInvestment)}</span>
+              </div>
+              <div style={{ fontSize: '0.6rem', color: '#64748b', marginTop: '0.375rem' }}>
+                {Object.keys(investmentByState).length} states with active projects
+              </div>
+            </div>
+          )}
 
           {/* Hover tooltip */}
           {hoveredOpp && !selectedOpp && (
@@ -821,11 +946,14 @@ export default function MapPage() {
         )}
       </div>
 
-      {/* Pulse animation */}
+      {/* Animations */}
       <style jsx global>{`
         @keyframes pulse {
-          0%, 100% { transform: scale(1); opacity: 0.3; }
-          50% { transform: scale(1.5); opacity: 0.1; }
+          0%, 100% { transform: scale(1); opacity: 0.35; }
+          50% { transform: scale(1.8); opacity: 0.05; }
+        }
+        .rsm-geography {
+          transition: fill 0.3s ease, stroke 0.2s ease;
         }
       `}</style>
     </div>

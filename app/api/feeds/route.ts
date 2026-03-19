@@ -9,6 +9,7 @@ import { discoverOpportunities, getDiscoveryStats } from '@/lib/services/opportu
 import { generateInsights } from '@/lib/services/ai-classifier'
 import { fetchRadarSignals, isRadarAvailable } from '@/lib/services/radar-client'
 import { SystemStatus } from '@/lib/services/types'
+import { opportunities } from '@/lib/data/opportunities'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -53,7 +54,7 @@ export async function GET(request: Request) {
     // On Vercel, skip file persistence - just return the live data
     let savedSignals = 0
     let savedUpdates = 0
-    let storeStats: any = { totalOpportunities: 75, totalSignals: 0, pendingReview: 0 }
+    let storeStats: any = { totalOpportunities: opportunities.length, totalSignals: 0, pendingReview: 0 }
     let pendingCount = opportunitySignals.length
     
     if (!isVercel) {

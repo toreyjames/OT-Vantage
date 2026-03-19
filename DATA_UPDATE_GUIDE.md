@@ -7,7 +7,7 @@ The site now uses a **single source of truth** for opportunities data. All oppor
 
 1. **Shared Data File**: `lib/data/opportunities.ts`
    - Contains the `Opportunity` interface
-   - Contains the `opportunities` array (all 63 opportunities)
+   - Contains the `opportunities` array (all opportunities)
    - Contains `calculateSectorPipeline()` function that auto-calculates sector totals
 
 2. **Main Page** (`app/page.tsx`):
