@@ -2,7 +2,6 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState } from 'react'
 
 const COLORS = {
   border: '#21262d',
@@ -11,26 +10,10 @@ const COLORS = {
   accent: '#7ee787',
 }
 
-const LINKS = [
-  { href: '/radar', label: 'Command' },
-  { href: '/opportunities', label: 'Pipeline' },
-  { href: '/radar#build-clock-map', label: 'Map' },
-  { href: '/agents', label: 'Intelligence' },
-  { href: '/scoreboard', label: 'Scoreboard' },
-  { href: '/monitor', label: 'Monitor' },
-  { href: '/about', label: 'About' },
-] as const
-
+/** Single primary workspace: Map (Jupiter + embedded map). Brand returns to top of /radar. */
 export default function AppNav() {
   const pathname = usePathname()
-  const [hash, setHash] = useState('')
-
-  useEffect(() => {
-    const sync = () => setHash(typeof window !== 'undefined' ? window.location.hash : '')
-    sync()
-    window.addEventListener('hashchange', sync)
-    return () => window.removeEventListener('hashchange', sync)
-  }, [pathname])
+  const onWorkspace = pathname === '/radar'
 
   return (
     <nav
@@ -83,43 +66,21 @@ export default function AppNav() {
         </div>
       </Link>
       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-        {LINKS.map(({ href, label }) => {
-          const pathOnly = href.split('#')[0]
-          const onConsole =
-            pathname === '/radar' || pathname === '/'
-          const mapJump = href === '/radar#build-clock-map'
-          const commandLink = href === '/radar'
-
-          let highlighted = false
-          if (commandLink) {
-            highlighted = onConsole && hash !== '#build-clock-map'
-          } else if (mapJump) {
-            highlighted = pathname === '/radar' && hash === '#build-clock-map'
-          } else {
-            highlighted =
-              pathname === pathOnly ||
-              (pathOnly !== '/radar' && pathname?.startsWith(pathOnly + '/'))
-          }
-
-          return (
-            <Link
-              key={href}
-              href={href}
-              style={{
-                padding: '0.45rem 0.85rem',
-                color: highlighted ? COLORS.accent : COLORS.textMuted,
-                textDecoration: 'none',
-                fontSize: '0.8125rem',
-                fontWeight: 500,
-                borderRadius: '6px',
-                backgroundColor: highlighted ? COLORS.accent + '22' : 'transparent',
-                border: highlighted ? `1px solid ${COLORS.accent}44` : '1px solid transparent',
-              }}
-            >
-              {label}
-            </Link>
-          )
-        })}
+        <Link
+          href="/radar#build-clock-map"
+          style={{
+            padding: '0.45rem 0.85rem',
+            color: onWorkspace ? COLORS.accent : COLORS.textMuted,
+            textDecoration: 'none',
+            fontSize: '0.8125rem',
+            fontWeight: 500,
+            borderRadius: '6px',
+            backgroundColor: onWorkspace ? COLORS.accent + '22' : 'transparent',
+            border: onWorkspace ? `1px solid ${COLORS.accent}44` : '1px solid transparent',
+          }}
+        >
+          Map
+        </Link>
       </div>
     </nav>
   )

@@ -14,9 +14,9 @@ This app is **one product**: **Build Clock** is the Deloitte-facing name; **OT V
 | Route | Purpose |
 |-------|---------|
 | `/` → `/radar` | **One page:** Jupiter tracker (live intel, list/timeline) **+ map** side-by-side; live panel starts collapsed (click to expand) |
-| `/opportunities` | Full pipeline / filters |
-| `/map` | Full-screen map (same data; filters + detail panels) |
-| `/agents` | Intelligence / agents |
-| `/scoreboard`, `/monitor`, `/about` | Supporting views |
+| `/map` | Full-screen map (same data; filters + detail panels) — also embedded on `/radar` |
+| `/opportunities`, `/agents`, `/scoreboard`, `/monitor`, `/about` | **Redirect to `/radar`** (legacy URLs kept from breaking bookmarks) |
+
+Nav shows **Build Clock** + **Map** only; the workspace is the screenshot experience (ticker, live intel, Jupiter + map).
 
 The map on `/radar` loads `/map?embed=1` in an iframe (no duplicate nav inside the frame).
