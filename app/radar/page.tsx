@@ -98,6 +98,25 @@ export default function RadarPage() {
 
   const sectors = useMemo(() => calculateSectorPipeline(opportunities), [])
 
+  // Pipeline stages (Salesforce-style funnel)
+  const STAGES: { key: NonNullable<Opportunity['procurementStage']>; label: string; color: string }[] = [
+    { key: 'monitoring', label: 'Monitoring', color: '#64748b' },
+    { key: 'pre-rfp', label: 'Pre-RFP', color: '#8b5cf6' },
+    { key: 'rfp-open', label: 'RFP Open', color: '#3b82f6' },
+    { key: 'proposal-submitted', label: 'Submitted', color: '#06b6d4' },
+    { key: 'evaluation', label: 'Evaluation', color: '#d29922' },
+    { key: 'awarded', label: 'Awarded', color: '#7ee787' },
+    { key: 'construction', label: 'Construction', color: '#22c55e' },
+  ]
+
+  const pipelineStages = useMemo(() => {
+    return STAGES.map((stage) => {
+      const opps = opportunities.filter((o) => o.procurementStage === stage.key)
+      const value = opps.reduce((s, o) => s + o.investmentSize, 0)
+      return { ...stage, count: opps.length, value, opps }
+    })
+  }, [])
+
   const totalPipeline = useMemo(
     () => opportunities.reduce((s, o) => s + o.investmentSize, 0),
     [],
@@ -127,7 +146,7 @@ export default function RadarPage() {
       </header>
 
       {/* ── Top row: Map (left) + Jupiter tracker (right) ──────────── */}
-      <div style={S.topRow}>
+      <div style={S.topRow} className="ov-top-row">
         {/* Map */}
         <section style={S.mapPanel}>
           <div style={S.panelHead}>
@@ -223,7 +242,7 @@ export default function RadarPage() {
       {/* ── Bottom row: Sector breakdown ───────────────────────────── */}
       <section style={S.sectorSection}>
         <h2 style={S.sectorHeading}>Industry Breakdown</h2>
-        <div style={S.sectorGrid}>
+        <div style={S.sectorGrid} className="ov-sector-grid">
           {sectors.map((s) => (
             <div key={s.sector} style={S.sectorCard}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -248,6 +267,58 @@ export default function RadarPage() {
                 <span style={S.dot}>·</span>
                 <span style={{ textTransform: 'capitalize' }}>{s.economicImpact}</span>
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Pipeline Tracker (Salesforce-style stage funnel) ────────── */}
+      <section style={S.pipeSection}>
+        <h2 style={S.sectorHeading}>Pipeline Tracker</h2>
+
+        {/* Stage bar */}
+        <div style={S.stageBar} className="ov-stage-bar">
+          {pipelineStages.map((st) => {
+            const pct = opportunities.length ? (st.count / opportunities.length) * 100 : 0
+            return (
+              <div
+                key={st.key}
+                style={{ ...S.stageSegment, flex: Math.max(pct, 4) }}
+                title={`${st.label}: ${st.count} opps — ${fmt(st.value)}`}
+              >
+                <div style={{ ...S.stageSegmentFill, backgroundColor: st.color }} />
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Stage cards */}
+        <div style={S.stageGrid} className="ov-stage-grid">
+          {pipelineStages.map((st) => (
+            <div key={st.key} style={S.stageCard}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.375rem' }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: st.color, flexShrink: 0 }} />
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: C.text }}>{st.label}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <span style={S.stageCount}>{st.count}</span>
+                <span style={S.stageValue}>{fmt(st.value)}</span>
+              </div>
+              {st.opps.length > 0 && (
+                <div style={S.stageOpps}>
+                  {st.opps.slice(0, 3).map((o) => (
+                    <div key={o.id} style={S.stageOpp}>
+                      <span style={S.stageOppName}>{o.company}</span>
+                      <span style={S.stageOppVal}>{fmt(o.investmentSize)}</span>
+                    </div>
+                  ))}
+                  {st.opps.length > 3 && (
+                    <div style={{ fontSize: '0.625rem', color: C.muted, marginTop: '0.125rem' }}>
+                      +{st.opps.length - 3} more
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -554,7 +625,7 @@ const S: Record<string, React.CSSProperties> = {
   tlVal: { fontWeight: 700, color: C.accent, fontFamily: "'JetBrains Mono', monospace", fontSize: '0.8125rem' },
 
   // Sector breakdown
-  sectorSection: { marginTop: '0.5rem' },
+  sectorSection: { marginTop: '0.5rem', marginBottom: '2rem' },
   sectorHeading: { fontSize: '1rem', fontWeight: 700, color: C.accent, margin: '0 0 0.75rem' },
   sectorGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.75rem' },
   sectorCard: {
@@ -571,4 +642,34 @@ const S: Record<string, React.CSSProperties> = {
   sectorBar: { height: 4, backgroundColor: C.border, borderRadius: 2, overflow: 'hidden', marginBottom: '0.375rem' },
   sectorBarFill: { height: '100%', borderRadius: 2, transition: 'width 0.3s' },
   sectorMeta: { fontSize: '0.6875rem', color: C.muted, display: 'flex', gap: '0.375rem' },
+
+  // Pipeline tracker
+  pipeSection: { marginBottom: '2rem' },
+  stageBar: {
+    display: 'flex',
+    gap: 2,
+    height: 8,
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginBottom: '0.75rem',
+  },
+  stageSegment: { position: 'relative', minWidth: 4 },
+  stageSegmentFill: { width: '100%', height: '100%', borderRadius: 2, opacity: 0.85 },
+  stageGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+    gap: '0.625rem',
+  },
+  stageCard: {
+    padding: '0.75rem',
+    backgroundColor: C.card,
+    border: `1px solid ${C.border}`,
+    borderRadius: '8px',
+  },
+  stageCount: { fontSize: '1.5rem', fontWeight: 700, color: C.text, fontFamily: "'JetBrains Mono', monospace" },
+  stageValue: { fontSize: '0.8125rem', fontWeight: 600, color: C.accent, fontFamily: "'JetBrains Mono', monospace" },
+  stageOpps: { marginTop: '0.5rem', borderTop: `1px solid ${C.border}`, paddingTop: '0.375rem' },
+  stageOpp: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.125rem 0' },
+  stageOppName: { fontSize: '0.6875rem', color: C.muted, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '65%' },
+  stageOppVal: { fontSize: '0.6875rem', fontWeight: 600, color: C.accent, fontFamily: "'JetBrains Mono', monospace" },
 }

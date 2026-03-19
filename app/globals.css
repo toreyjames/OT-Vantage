@@ -183,7 +183,37 @@ tr:hover {
   border-radius: 4px;
 }
 
-/* Responsive adjustments */
+/* ── OT Vantage responsive ──────────────────────────────────── */
+
+/* Stack map + tracker on narrow screens */
+@media (max-width: 1100px) {
+  .ov-top-row {
+    grid-template-columns: 1fr !important;
+    min-height: auto !important;
+  }
+  .ov-top-row > section:first-child {
+    min-height: 420px;
+  }
+  .ov-top-row > section:last-child {
+    max-height: 600px;
+  }
+}
+
+/* Pipeline stage cards scroll horizontally on small screens */
+@media (max-width: 900px) {
+  .ov-stage-grid {
+    grid-template-columns: repeat(7, minmax(140px, 1fr)) !important;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .ov-stage-bar {
+    display: none !important;
+  }
+}
+
+/* Legacy class kept for other pages */
 @media (max-width: 1400px) {
   .grid-cols-12 {
     grid-template-columns: repeat(12, minmax(0, 1fr));
