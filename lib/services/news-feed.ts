@@ -120,6 +120,30 @@ const EVENT_DISCOVERY_QUERIES: Record<string, string[]> = {
     'NRC license approved',
     'state incentive energy company',
   ],
+  // Mega-deal & press-release catch-all queries
+  'mega-deals': [
+    'billion dollar factory construction United States',
+    'billion dollar manufacturing plant announcement',
+    'billion dollar data center investment',
+    'megaproject breaks ground construction',
+    'largest investment in US history',
+    'Project Matador nuclear AI campus',
+    'Project Horizon data center construction',
+    'Project Ruby data center campus',
+    'Project Stargate AI infrastructure',
+    'gigawatt data center campus construction',
+    '$50 billion US investment',
+    '$100 billion megafab semiconductor',
+    'AstraZeneca US manufacturing investment',
+    'Eli Lilly manufacturing plant construction',
+    'Novo Nordisk US expansion',
+    'Johnson Johnson cell therapy facility',
+    'pharmaceutical factory construction US 2026',
+    'defense manufacturing expansion missile production',
+    'aluminum smelter construction US',
+    'Vantage Data Centers Frontier campus',
+    'CoreWeave data center campus',
+  ],
 }
 
 /**
@@ -289,7 +313,9 @@ const SECTOR_KEYWORDS: Record<string, string[]> = {
   ],
   'data-center': [
     'data center', 'hyperscale', 'cloud', 'colocation', 'server farm',
-    'AWS', 'Azure', 'Google Cloud', 'Meta', 'Oracle', 'Equinix', 'Digital Realty'
+    'AWS', 'Azure', 'Google Cloud', 'Meta', 'Oracle', 'Equinix', 'Digital Realty',
+    'Vantage Data Centers', 'CoreWeave', 'Atlas Development', 'Project Horizon',
+    'Project Ruby', 'Frontier campus', 'liquid cooling', 'GPU cloud'
   ],
   'ev-battery': [
     'battery', 'EV', 'electric vehicle', 'gigafactory', 'lithium-ion', 'cell production',
@@ -313,6 +339,10 @@ const SECTOR_KEYWORDS: Record<string, string[]> = {
     'rare earth', 'lithium', 'cobalt', 'nickel', 'gallium', 'germanium', 'mining', 'refining',
     'graphite', 'manganese', 'vanadium', 'critical mineral'
   ],
+  'metals': [
+    'aluminum smelter', 'steel mill', 'Century Aluminum', 'Nucor', 'US Steel',
+    'steel production', 'aluminum production', 'metals manufacturing', 'smelter construction'
+  ],
   'defense': [
     'defense', 'aerospace', 'military', 'DoD', 'shipyard', 'munitions', 'depot',
     'GE Aerospace', 'Lockheed Martin', 'Northrop Grumman', 'RTX', 'Raytheon',
@@ -322,8 +352,10 @@ const SECTOR_KEYWORDS: Record<string, string[]> = {
   'life-sciences': [
     'pharmaceutical', 'pharma', 'biomanufacturing', 'biotech', 'GxP', 'cGMP',
     'Pfizer', 'Moderna', 'Eli Lilly', 'Novo Nordisk', 'Merck', 'AbbVie',
-    'Johnson & Johnson', 'Amgen', 'Roche', 'AstraZeneca',
-    'FDA', 'cleanroom', 'cell therapy', 'gene therapy', 'biologics'
+    'Johnson & Johnson', 'Amgen', 'Roche', 'AstraZeneca', 'Sanofi', 'GSK',
+    'FDA', 'cleanroom', 'cell therapy', 'gene therapy', 'biologics',
+    'GLP-1', 'Wegovy', 'Ozempic', 'weight loss drug', 'injectable medicine',
+    'fill finish', 'drug substance manufacturing', 'oncology manufacturing'
   ],
 }
 
@@ -574,8 +606,20 @@ function generateSmartDiscoveryQueries(): string[] {
   
   // 2. Priority company searches (secondary - track important known companies)
   const priorityCompanies = [
-    'Oklo', 'Helion', 'Commonwealth Fusion', 'NuScale', 'TerraPower',
-    'TSMC', 'Intel', 'Microsoft', 'Google', 'Amazon', 'Meta',
+    // Nuclear / fusion
+    'Oklo', 'Helion', 'Commonwealth Fusion', 'NuScale', 'TerraPower', 'Kairos Power', 'X-energy',
+    // Semiconductors
+    'TSMC', 'Intel', 'Micron', 'Samsung', 'GlobalFoundries',
+    // Big Tech (data centers + AI infrastructure)
+    'Microsoft', 'Google', 'Amazon', 'Meta', 'Oracle', 'CoreWeave', 'Vantage Data Centers',
+    // Pharma / biotech
+    'AstraZeneca', 'Eli Lilly', 'Novo Nordisk', 'Johnson & Johnson', 'Moderna', 'Pfizer',
+    // Defense
+    'RTX', 'Raytheon', 'L3Harris', 'Northrop Grumman', 'Lockheed Martin', 'General Dynamics',
+    // EV / battery
+    'Tesla', 'Ford', 'Toyota', 'Rivian', 'LG Energy Solution',
+    // Critical materials
+    'MP Materials', 'Albemarle', 'Century Aluminum', 'Redwood Materials',
   ]
   for (const company of priorityCompanies) {
     queries.push(`${company} announcement news`)
@@ -595,9 +639,81 @@ function generateSmartDiscoveryQueries(): string[] {
   return queries
 }
 
+// ============================================================================
+// PRESS RELEASE RSS FEEDS (secondary sources — catches pharma, defense, mega-deals)
+// ============================================================================
+const PRESS_RELEASE_FEEDS = [
+  // PR Newswire — manufacturing, energy, pharma
+  'https://www.prnewswire.com/rss/news-releases-list.rss',
+  // GlobeNewsWire — corporate announcements
+  'https://www.globenewswire.com/RssFeed/subjectcode/25-Manufacturing/feedTitle/GlobeNewswire%20-%20Manufacturing',
+  // Business Wire — investment & deal announcements
+  'https://feed.businesswire.com/rss/home/?rss=G1QFDERJXkJeGVpSWg==',
+]
+
+async function fetchPressReleaseFeeds(): Promise<NewsItem[]> {
+  const trackedLower = getTrackedCompaniesLower()
+  const allItems: NewsItem[] = []
+
+  const results = await Promise.allSettled(
+    PRESS_RELEASE_FEEDS.map(async (feedUrl) => {
+      try {
+        const res = await fetch(feedUrl, { next: { revalidate: 1800 } })
+        if (!res.ok) return []
+        const xml = await res.text()
+
+        const items: NewsItem[] = []
+        const itemRegex = /<item>([\s\S]*?)<\/item>/g
+        let match
+        while ((match = itemRegex.exec(xml)) !== null) {
+          const itemXml = match[1]
+          const titleMatch = itemXml.match(/<title>([\s\S]*?)<\/title>/)
+          const linkMatch = itemXml.match(/<link>([\s\S]*?)<\/link>/)
+          const descMatch = itemXml.match(/<description>([\s\S]*?)<\/description>/)
+          const dateMatch = itemXml.match(/<pubDate>([\s\S]*?)<\/pubDate>/)
+
+          if (!titleMatch || !linkMatch) continue
+          const title = titleMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '').trim()
+          const description = descMatch ? descMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '').replace(/<[^>]*>/g, '').trim() : ''
+          const fullText = `${title} ${description}`
+
+          const extractedCompanyNames = extractCompanyNames(fullText)
+          const isNewDiscovery = extractedCompanyNames.length > 0 && checkForNewDiscovery(extractedCompanyNames, trackedLower)
+          const relevanceScore = calculateRelevance(title, description, isNewDiscovery)
+
+          if (relevanceScore >= 15) {
+            items.push({
+              id: `pr-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              title,
+              description,
+              url: linkMatch[1].trim(),
+              source: feedUrl.includes('prnewswire') ? 'PR Newswire' : feedUrl.includes('globenewswire') ? 'GlobeNewsWire' : 'Business Wire',
+              publishedAt: dateMatch ? new Date(dateMatch[1].trim()).toISOString() : new Date().toISOString(),
+              relevanceScore,
+              extractedData: extractData(title, description),
+              extractedCompanyNames,
+              isNewDiscovery,
+              discoverySource: 'press-release-feed',
+            })
+          }
+        }
+        return items
+      } catch {
+        return []
+      }
+    }),
+  )
+
+  for (const result of results) {
+    if (result.status === 'fulfilled') allItems.push(...result.value)
+  }
+  return allItems
+}
+
 /**
  * Fetch news using SMART DISCOVERY
  * Prioritizes EVENT-based queries to find unknown companies
+ * Also pulls from press release feeds for pharma/defense/mega-deal coverage
  */
 export async function fetchRelevantNews(customQueries?: string[]): Promise<NewsItem[]> {
   const allItems: NewsItem[] = []
@@ -613,15 +729,28 @@ export async function fetchRelevantNews(customQueries?: string[]): Promise<NewsI
     queryBatches.push(queries.slice(i, i + batchSize))
   }
   
-  // Process first 4 batches (40 queries) for broader coverage
-  const activeBatches = queryBatches.slice(0, 4)
-  
-  for (const batch of activeBatches) {
-    const results = await Promise.all(
-      batch.map(q => fetchGoogleNewsRSS(q))
-    )
-    
-    for (const items of results) {
+  // Process first 8 batches (80 queries) for broader coverage
+  const activeBatches = queryBatches.slice(0, 8)
+
+  // Run Google News + press release feeds in parallel
+  const [pressReleaseItems, ...batchResults] = await Promise.all([
+    fetchPressReleaseFeeds(),
+    ...activeBatches.map((batch) =>
+      Promise.all(batch.map((q) => fetchGoogleNewsRSS(q))),
+    ),
+  ])
+
+  // Merge press release items
+  for (const item of pressReleaseItems) {
+    if (!seenUrls.has(item.url)) {
+      seenUrls.add(item.url)
+      allItems.push(item)
+    }
+  }
+
+  // Merge Google News batches
+  for (const batchResult of batchResults) {
+    for (const items of batchResult) {
       for (const item of items) {
         if (!seenUrls.has(item.url)) {
           seenUrls.add(item.url)
